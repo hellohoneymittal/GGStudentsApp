@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png" />
+    <title>Gaurang Gurukul Student's App</title>
+
+    <link rel="stylesheet" href="StylesCommon.css" />
+    <link rel="stylesheet" href="StylesSpecific.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div class="primaryContainerDiv">
+      <div id="loadingSpinner" style="display: none">
+        <div class="spinner"></div>
+      </div>
+      <div class="infoPopup" id="successPopup">
+        <div class="infoPopup-content">
+          <div class="infoPopup-icon success"></div>
+          <h2 class="infoPopup-heading success">Success!</h2>
+          <div id="successMessage" class="infoPopup-message"></div>
+          <button class="green" id="successOkButton">OKAY</button>
+        </div>
+      </div>
+      <div class="infoPopup" id="errorPopup">
+        <div class="infoPopup-content">
+          <div class="infoPopup-icon error"></div>
+          <h2 class="infoPopup-heading error">Error!</h2>
+          <div id="errorMessage" class="infoPopup-message"></div>
+          <button class="red" onclick="CLOSE_INFO_POPUP('errorPopup')">
+            TRY AGAIN
+          </button>
+        </div>
+      </div>
+      <div class="infoPopup" id="infoPopup">
+        <div class="infoPopup-content">
+          <div class="infoPopup-icon info"></div>
+          <h2 class="infoPopup-heading info">Information</h2>
+          <div id="infoMessage" class="infoPopup-message"></div>
+          <button class="green" onclick="CLOSE_INFO_POPUP('infoPopup')">
+            OKAY
+          </button>
+        </div>
+      </div>
+      <div class="infoPopup" id="confirmationPopup">
+        <div class="infoPopup-content">
+          <div class="infoPopup-icon confirmation"></div>
+          <div class="infoPopup-message" id="confirmationMessage"></div>
+          <div class="button-row">
+            <button class="red" id="confirmationNoButton">NO</button>
+            <button class="green" id="confirmationYesButton">YES</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="infoPopup" id="confirmationGridPopup">
+        <div class="infoPopup-content">
+          <div class="infoPopup-icon confirmation"></div>
+
+          <!-- Status Text Area -->
+          <div id="confirmationGridStatusText" class="heading"></div>
+
+          <!-- Table Grid Container -->
+          <div
+            id="confirmationGridContainer"
+            class="collection-table-container scrollable-content-table"
+            style="margin-top: 10px"
+          >
+            <table id="confirmationGridTable">
+              <thead id="confirmationGridTHead" class="table-header">
+                <!-- Table headers will be dynamically generated here -->
+              </thead>
+              <tbody id="confirmationGridTBody">
+                <!-- Table rows will be dynamically generated here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Buttons for Confirmation -->
+          <div class="button-row">
+            <button class="red" id="confirmationGridNoButton">NO</button>
+            <button class="green" id="confirmationGridYesButton">YES</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" style="display: flex" id="mainMenuPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <h2>Students' App</h2>
+          <!-- <div class="flex"> -->
+          <button
+            class="blue"
+            onclick="
+              document.getElementById('parentMobileBox').value = '';
+              document.getElementById('parentMobileBoxError').innerHTML = '';
+              document.getElementById('submitMobileNumberBtn').disabled = true;
+              SHOW_SPECIFIC_DIV('parentMobilePopup');
+            "
+          >
+            Request Student Exit Pass
+          </button>
+          <button class="yellow" onclick="" disabled>
+            Raise Issue/Query/Feedback
+          </button>
+          <button class="green" onclick="openLoginScreen()">
+            Student Login
+          </button>
+          <!-- </div> -->
+        </div>
+      </div>
+
+      <div class="popup" id="passwordPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <input
+            type="text"
+            id="passworTxtBox"
+            placeholder="Student Password"
+            required
+          />
+          <div class="error" id="passworTxtBoxError"></div>
+          <div class="button-row">
+            <button class="purple" onclick="SHOW_SPECIFIC_DIV('mainMenuPopup')">
+              Home
+            </button>
+            <button
+              class="red"
+              onclick="
+                document.getElementById('passworTxtBox').value = '';
+                document.getElementById('passworTxtBoxError').innerHTML = '';
+              "
+            >
+              Reset
+            </button>
+            <button class="green" id="submitPassBtn" onclick="submitPass()">
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="parentMobilePopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <input
+            type="text"
+            id="parentMobileBox"
+            maxlength="10"
+            inputmode="numeric"
+            required
+            placeholder="Registered Mobile Number"
+          />
+          <div class="error" id="parentMobileBoxError"></div>
+          <div class="button-row">
+            <button class="purple" onclick="SHOW_SPECIFIC_DIV('mainMenuPopup')">
+              Home
+            </button>
+            <button
+              class="red"
+              onclick="
+                document.getElementById('parentMobileBox').value = '';
+                document.getElementById('parentMobileBoxError').innerHTML = '';
+              "
+            >
+              Reset
+            </button>
+            <button
+              class="green"
+              id="submitMobileNumberBtn"
+              onclick="submitMobileNumber()"
+              disabled
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="userMenuPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="flex">
+            <div class="user-info-block" id="login-user-name-div_user">
+              <p id="login-user-name-lbl_user"></p>
+            </div>
+
+            <button
+              class="green"
+              onclick="openAdmissionKitOpenScreen()"
+              id="stdYearlyAdmissionKitProcessBtn"
+            >
+              Student Yearly Admission Kit Process
+            </button>
+
+            <button class="red" onclick="onLogoutClick()" id="logoutBtn">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="gatePassStudentPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <h2>Student Exit Gate Pass Request</h2>
+          <div class="radio-content-custom-box">
+            <div class="radio-heading-student">
+              <label class="required">Select student(s)</label>
+            </div>
+            <div class="radio-content-without-flex" id="gpStudentList">
+              <!-- Dynamic student list -->
+            </div>
+            <div></div>
+            <textarea
+              id="gpReason"
+              rows="2"
+              placeholder="Please enter a valid reason for taking the student(s) within the school timings."
+              required
+            ></textarea>
+            <div class="error" id="gpReasonError"></div>
+          </div>
+
+          <div class="button-row">
+            <button
+              class="purple"
+              onclick="
+                document.getElementById('parentMobileBox').value = '';
+                document.getElementById('parentMobileBoxError').innerHTML = '';
+                document.getElementById('submitMobileNumberBtn').disabled =
+                  true;
+                SHOW_SPECIFIC_DIV('parentMobilePopup');
+              "
+            >
+              Back
+            </button>
+            <button class="red" onclick="resetGatePassForm()">Reset</button>
+            <button
+              class="green"
+              id="gpNextBtn"
+              disabled
+              onclick="
+                SHOW_CONFIRMATION_POPUP(
+                  'Are you sure to submit gate pass request!',
+                  submitNames,
+                )
+              "
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="StdYearlyAdmissionKitEntryContianer">
+        <div class="popup-content scrollable-content">
+          <div id="StdYearlyEntry"></div>
+        </div>
+      </div>
+      <div class="popup" id="StdYearlyAdmissionKitProcessContainer">
+        <div class="popup-content scrollable-content">
+          <div id="products-col">
+            <div class="search-wrap">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="search-box"
+                placeholder="Search items or categories..."
+                oninput="ggFilterProducts()"
+              />
+              <button class="clear-btn" id="clear-btn" onclick="clearSearch()">
+                ✕
+              </button>
+            </div>
+
+            <div id="product-list"></div>
+            <div class="checkout-summary-container">
+              <div class="checkout-summary-header">Review Your Selection</div>
+
+              <div id="checkout-summary-list"></div>
+
+              <div class="checkout-summary-total">
+                <span>Grand Total</span>
+                <span class="checkout-total-amount">
+                  <span class="currency">₹</span>
+                  <span id="checkout-grand-total">0</span>
+                </span>
+              </div>
+            </div>
+            <!-- <div class="total-price-container">
+              <div class="total-label">Total:</div>
+
+              <div class="total-amount">
+                <span class="currency">₹</span>
+                <span id="total-price"></span>
+              </div>
+            </div> -->
+            <div class="comment-section">
+              <textarea
+                id="commentText"
+                placeholder="Add Comment if any ..."
+              ></textarea>
+            </div>
+            <div class="button-row">
+              <button class="red" onclick="backBtnYearlyAdminKit()">
+                Back
+              </button>
+              <button
+                class="green"
+                id="finalSubmitBtn"
+                onclick="ggStdYearlyKitSubmitForm()"
+              >
+                Submit
+              </button>
+            </div>
+
+            <div class="pending-grid-container" id="pending-container">
+              <h3>Pending Delivery Items</h3>
+              <div id="pending-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="studentListPopup">
+        <div class="popup-content scrollable-content">
+          <div class="liveSearchContainer">
+            <input
+              type="text"
+              id="studentListInput"
+              class="liveSearch"
+              placeholder="Select Item..."
+            />
+            <button class="liveSearchClearBtn" id="studentListInputClrBtn">
+              &times;
+            </button>
+            <ul id="studentListInputULList" class="liveSearchUL"></ul>
+          </div>
+          <div class="button-row">
+            <button class="red" onclick="backToUserMenu()">Back</button>
+            <button class="orange" onclick="proceedForKit()">
+              Proceed for Kit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="ScriptCommon.js"></script>
+    <script src="ScriptConstants.js"></script>
+    <script src="Script.js"></script>
+    <script src="ScriptYearlyAdmissionKit.js"></script>
+    <script src="ScriptGatePass.js"></script>
+  </body>
+</html>
