@@ -1,5 +1,22 @@
 let selectedStudent = {};
 let selectedTeacher = {};
+
+document.getElementById("passworTxtBox").addEventListener("input", function () {
+  let password_input = this.value;
+  let error_div = document.getElementById("passworTxtBoxError");
+  error_div.innerHTML = "";
+  const numPattern = /^[0-9]+$/;
+  let submitButton = document.getElementById("submitPassBtn");
+
+  submitButton.disabled = true;
+
+  if (password_input.length < 8) {
+    return;
+  }
+
+  submitButton.disabled = false;
+});
+
 async function openLoginScreen() {
   document.getElementById("passworTxtBox").value = "";
   document.getElementById("passworTxtBoxError").innerHTML = "";
