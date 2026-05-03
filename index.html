@@ -207,8 +207,11 @@
             <button class="green" onclick="openStudentPassWindow()">
               Request Student Exit Pass
             </button>
-            <button class="yellow" onclick="" disabled>
-              Raise Issue/Query/Feedback
+            <button
+              class="yellow"
+              onclick="SHOW_SPECIFIC_DIV('feedbackMenuPopup')"
+            >
+              Issue/Query/Feedback
             </button>
 
             <button class="red" onclick="onLogoutClick()" id="logoutBtn">
@@ -237,8 +240,96 @@
               Student Yearly Admission Kit Process
             </button>
 
-            <button class="red" onclick="onLogoutClick()" id="logoutBtn">
-              Logout
+            <button class="red" onclick="onLogoutClick()">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="feedbackMenuPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="flex">
+            <button
+              class="blue"
+              onclick="
+                resetFeedbackForm();
+                SHOW_SPECIFIC_DIV('feedbackFormPopup');
+              "
+            >
+              Raise New Ticket
+            </button>
+            <button class="green" onclick="" disabled>Ticket History</button>
+            <button
+              class="red"
+              onclick="
+                resetFeedbackForm();
+                SHOW_SPECIFIC_DIV('parentMenuPopup');
+              "
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="feedbackFormPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <h2>New Ticket for Concern/Feedback</h2>
+          <form id="feedbackForm">
+            <label class="required" for="feedbackDepartment"
+              >Select Department:</label
+            >
+            <select id="feedbackDepartment" name="department" required>
+              <option value="">-- Select Department --</option>
+              <option value="administration">Administration</option>
+              <option value="hostel">Hostel</option>
+            </select>
+
+            <br /><br />
+
+            <label class="required" for="feedbackComment">Description:</label>
+            <textarea
+              id="feedbackComment"
+              name="feedbackComment"
+              rows="4"
+              cols="40"
+              placeholder="Minimum 30 characters required"
+              required
+              disabled
+            ></textarea>
+            <div class="error" id="feedbackCommentError"></div>
+          </form>
+
+          <div class="button-row">
+            <button
+              class="purple"
+              onclick="SHOW_SPECIFIC_DIV('parentMenuPopup')"
+            >
+              Home
+            </button>
+            <button
+              class="red"
+              onclick="
+                resetFeedbackForm();
+                SHOW_SPECIFIC_DIV('feedbackMenuPopup');
+              "
+            >
+              Back
+            </button>
+            <button
+              class="green"
+              id="submitFeedbackFromBtn"
+              onclick="submitFeedback()"
+              disabled
+            >
+              Submit
             </button>
           </div>
         </div>
@@ -409,5 +500,6 @@
     <script src="Script.js"></script>
     <script src="ScriptYearlyAdmissionKit.js"></script>
     <script src="ScriptGatePass.js"></script>
+    <script src="ScriptFeedback.js"></script>
   </body>
 </html>

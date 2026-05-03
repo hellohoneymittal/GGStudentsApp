@@ -1,5 +1,6 @@
-let enteredMobileNUmber = "";
+let enteredMobileNumber = "";
 let parentChildrenData = {};
+let parentOf = "";
 
 document
   .getElementById("parentMobileBox")
@@ -80,7 +81,7 @@ async function submitMobileNumber() {
 
   if (mobileNumber) {
     mobileNumber = mobileNumber.trim();
-    enteredMobileNUmber = mobileNumber;
+    enteredMobileNumber = mobileNumber;
 
     parentChildrenData = await CALL_API("CHECK_PARENT_MOBILE", {
       inputData: mobileNumber,
@@ -119,7 +120,7 @@ function openStudentPassWindow() {
 
   populateStudentListForGatePass(
     parentChildrenData.data.output,
-    enteredMobileNUmber,
+    enteredMobileNumber,
   );
 }
 
