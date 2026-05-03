@@ -99,7 +99,7 @@
             src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
             alt="School Logo"
           />
-          <h2>Students' App</h2>
+          <h2>Gaurang Gurukul Student's App</h2>
           <!-- <div class="flex"> -->
           <button
             class="blue"
@@ -110,10 +110,7 @@
               SHOW_SPECIFIC_DIV('parentMobilePopup');
             "
           >
-            Request Student Exit Pass
-          </button>
-          <button class="yellow" onclick="" disabled>
-            Raise Issue/Query/Feedback
+            Parent Login
           </button>
           <button class="green" onclick="openLoginScreen()">
             Student Login
@@ -148,7 +145,12 @@
             >
               Reset
             </button>
-            <button class="green" id="submitPassBtn" onclick="submitPass()">
+            <button
+              class="green"
+              id="submitPassBtn"
+              onclick="submitPass()"
+              disabled
+            >
               Login
             </button>
           </div>
@@ -189,7 +191,28 @@
               onclick="submitMobileNumber()"
               disabled
             >
-              Submit
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="parentMenuPopup">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="flex">
+            <button class="green" onclick="openStudentPassWindow()">
+              Request Student Exit Pass
+            </button>
+            <button class="yellow" onclick="" disabled>
+              Raise Issue/Query/Feedback
+            </button>
+
+            <button class="red" onclick="onLogoutClick()" id="logoutBtn">
+              Logout
             </button>
           </div>
         </div>

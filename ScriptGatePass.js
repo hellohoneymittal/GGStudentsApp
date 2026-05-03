@@ -1,3 +1,6 @@
+let enteredMobileNUmber = "";
+let parentChildrenData = {};
+
 document
   .getElementById("parentMobileBox")
   .addEventListener("input", function () {
@@ -75,38 +78,24 @@ async function submitMobileNumber() {
   let error_div = document.getElementById("parentMobileBoxError");
   error_div.innerHTML = "";
 
-  if (now.getDay() === 0) {
-    SHOW_INFO_POPUP("Cannot raise a request on a Sunday!");
-    return;
-  }
-
   if (mobileNumber) {
     mobileNumber = mobileNumber.trim();
+    enteredMobileNUmber = mobileNumber;
 
-    const outputData = await CALL_API("CHECK_PARENT_MOBILE", {
+    parentChildrenData = await CALL_API("CHECK_PARENT_MOBILE", {
       inputData: mobileNumber,
     });
 
-    if (outputData?.status == "success" && outputData.data) {
+    if (parentChildrenData?.status == "success" && parentChildrenData.data) {
       if (
-        typeof outputData.data === "string" &&
-        outputData.data.includes("ERR")
+        typeof parentChildrenData.data === "string" &&
+        parentChildrenData.data.includes("ERR")
       ) {
-        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+        SHOW_ERROR_POPUP(parentChildrenData.data.split("ERR: ")[1]);
         return;
       }
 
-      if (outputData.data.infoMsg) {
-        console.log(
-          "Information from Parent Mobile Function:\n\n" +
-            outputData.data.infoMsg,
-        );
-        SHOW_INFO_POPUP(outputData.data.infoMsg);
-        SHOW_SPECIFIC_DIV("mainMenuPopup");
-        return;
-      }
-
-      populateStudentListForGatePass(outputData.data.output, mobileNumber);
+      SHOW_SPECIFIC_DIV("parentMenuPopup");
     } else {
       error_div.innerHTML = "Please enter a valid mobile number!!";
       return;
@@ -115,6 +104,23 @@ async function submitMobileNumber() {
     error_div.innerHTML = "Please enter a valid mobile number!!";
     return;
   }
+}
+
+function openStudentPassWindow() {
+  if (parentChildrenData.data.infoMsg) {
+    console.log(
+      "Information from Parent Mobile Function:\n\n" +
+        parentChildrenData.data.infoMsg,
+    );
+    SHOW_INFO_POPUP(parentChildrenData.data.infoMsg);
+    SHOW_SPECIFIC_DIV("parentMenuPopup");
+    return;
+  }
+
+  populateStudentListForGatePass(
+    parentChildrenData.data.output,
+    enteredMobileNUmber,
+  );
 }
 
 function populateStudentListForGatePass(input_list, input_mobile) {
@@ -243,7 +249,7 @@ async function submitNames() {
           outputData.data.infoMsg,
       );
       SHOW_INFO_POPUP(outputData.data.infoMsg);
-      SHOW_SPECIFIC_DIV("mainMenuPopup");
+      SHOW_SPECIFIC_DIV("parentMenuPopup");
     }
   } else {
     SHOW_ERROR_POPUP("Internal error!");
