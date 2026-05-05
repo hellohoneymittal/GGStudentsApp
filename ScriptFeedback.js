@@ -29,6 +29,8 @@ comment.addEventListener("input", function () {
 
 function resetFeedbackForm() {
   document.getElementById("feedbackForm").reset();
+  submitBtn.disabled = true;
+  comment.disabled = true;
   commentError.innerHTML = "";
 }
 
