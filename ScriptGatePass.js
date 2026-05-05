@@ -1,6 +1,12 @@
 let enteredMobileNumber = "";
 let parentChildrenData = {};
 let parentOf = "";
+let parent_label_arr = [
+  "parent-feedback-input-lbl_user",
+  "parent-feedback-menu-lbl_user",
+  "parent-menu-lbl_user",
+  "parent-existing-feedback-lbl_user",
+];
 
 document
   .getElementById("parentMobileBox")
@@ -77,11 +83,18 @@ function timeToMinutes(t) {
 async function submitMobileNumber() {
   let mobileNumber = document.getElementById("parentMobileBox").value;
   let error_div = document.getElementById("parentMobileBoxError");
+  let i;
   error_div.innerHTML = "";
 
   if (mobileNumber) {
     mobileNumber = mobileNumber.trim();
     enteredMobileNumber = mobileNumber;
+
+    //Populating all info blocks
+    for (i = 0; i < parent_label_arr.length; i++) {
+      document.getElementById(parent_label_arr[i]).innerText =
+        `Logged in as : ${enteredMobileNumber}`;
+    }
 
     parentChildrenData = await CALL_API("CHECK_PARENT_MOBILE", {
       inputData: mobileNumber,

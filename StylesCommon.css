@@ -734,7 +734,7 @@ body {
 
 .collection-table-container {
   overflow: auto;
-  max-width: 400px;
+  max-width: 100%;
   margin-bottom: 1rem;
 }
 
@@ -744,29 +744,30 @@ table {
 }
 
 thead {
-  background-color: #66bb6a;
+  background-color: #52609a;
   color: #fff;
 }
 
 th {
-  padding: 6px;
+  padding: 8px;
   text-align: left;
-  border: 1px solid #ddd;
-  white-space: nowrap;
+  border: 2px solid black;
+  word-wrap: break-word;
 }
 td {
-  padding: 4px;
-  border: 1px solid #ddd;
-  white-space: nowrap;
+  padding: 8px;
+  border: 1px solid black;
+  white-space: pre-line;
+  text-align: left;
 }
 
 /* Alternating row colors */
 tbody tr:nth-child(odd) {
-  background-color: #e8f5e9;
+  background-color: #fff5ea;
 }
 
 tbody tr:nth-child(even) {
-  background-color: #f1f8e9;
+  background-color: #f8d4ad;
 }
 
 @media (max-width: 600px) {
@@ -1897,7 +1898,7 @@ input[type="radio"] {
   font-size: 18px;
   color: #e6e6e6;
   font-weight: bold;
-  background: #6a0dad; /* Light yellow background */
+  background: #52609a; /* Light yellow background */
   border-radius: 8px;
   border: 1px solid #ffc107; /* Yellow border */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -1907,10 +1908,10 @@ input[type="radio"] {
 
 .user-info-block p {
   margin: 0;
-  font-size: 21px;
+  font-size: 18px;
   color: #e6e6e6;
   font-weight: bold;
-  padding: 12px;
+  padding: 6px;
 }
 
 .error {
