@@ -286,7 +286,45 @@ function populateActionGrid(
     columnNames.forEach((column) => {
       if (gridData[key][column] == null) return;
       const td = document.createElement("td");
-      td.textContent = gridData[key][column];
+
+      if (column === "Description") {
+        const container = document.createElement("div");
+        container.className = "desc-container";
+
+        const textDiv = document.createElement("div");
+        textDiv.className = "desc-text";
+        textDiv.innerText = gridData[key][column];
+
+        const toggle = document.createElement("span");
+        toggle.className = "toggle-btn read-more";
+        toggle.innerText = "Read more ▼";
+
+        const toggleHandler = () => {
+          const expanded = textDiv.classList.toggle("expanded");
+
+          if (expanded) {
+            toggle.innerText = "Show less ▲";
+            toggle.classList.remove("read-more");
+            toggle.classList.add("show-less");
+          } else {
+            toggle.innerText = "Read more ▼";
+            toggle.classList.remove("show-less");
+            toggle.classList.add("read-more");
+          }
+        };
+
+        // Make BOTH clickable (better mobile UX)
+        textDiv.addEventListener("click", toggleHandler);
+        toggle.addEventListener("click", toggleHandler);
+
+        container.appendChild(textDiv);
+        container.appendChild(toggle);
+        td.appendChild(container);
+      } else {
+        td.innerText = gridData[key][column];
+      }
+
+      //td.textContent = gridData[key][column];
       row.appendChild(td);
     });
 
