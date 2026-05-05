@@ -204,6 +204,10 @@
             alt="School Logo"
           />
           <div class="flex">
+            <div class="user-info-block" id="parent-menu-div_user">
+              <p id="parent-menu-lbl_user"></p>
+            </div>
+
             <button class="green" onclick="openStudentPassWindow()">
               Request Student Exit Pass
             </button>
@@ -251,6 +255,11 @@
             src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
             alt="School Logo"
           />
+          <div class="user-info-block" id="parent-feedback-menu-div_user">
+            <p id="parent-feedback-menu-lbl_user"></p>
+          </div>
+          <br />
+          <h2>Feeback/Suggestions/Issues</h2>
           <div class="flex">
             <button
               class="blue"
@@ -261,7 +270,9 @@
             >
               Raise New Ticket
             </button>
-            <button class="green" onclick="" disabled>Ticket History</button>
+            <button class="green" onclick="getParentFeedback()">
+              Ticket History
+            </button>
             <button
               class="red"
               onclick="
@@ -281,6 +292,10 @@
             src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
             alt="School Logo"
           />
+          <div class="user-info-block" id="parent-feedback-input-div_user">
+            <p id="parent-feedback-input-lbl_user"></p>
+          </div>
+          <br />
           <h2>New Ticket for Concern/Feedback</h2>
           <form id="feedbackForm">
             <label class="required" for="feedbackDepartment"
@@ -331,6 +346,27 @@
             >
               Submit
             </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="existingFeedbackPopup">
+        <div
+          class="popup-content scrollable-content"
+          id="existingFeedbackSubPopup"
+        >
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="user-info-block">
+            <p id="parent-existing-feedback-lbl_user"></p>
+          </div>
+          <br />
+          <h2 id="gridHeading"></h2>
+          <div class="button-row">
+            <button class="green" id="existingFeedbackSubmitBtn">Back</button>
+            <button class="red" id="existingFeedbackBackButton">Back</button>
           </div>
         </div>
       </div>
