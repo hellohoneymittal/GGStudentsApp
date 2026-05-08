@@ -1,5 +1,6 @@
 let selectedStudent = {};
 let selectedTeacher = {};
+let student_label_arr = ["showAcademicReportsHeading_lbl"];
 
 document.getElementById("passworTxtBox").addEventListener("input", function () {
   let password_input = this.value;
@@ -42,11 +43,18 @@ async function openLoginScreen() {
 }
 
 function proceedStdLogin(selectedData) {
+  console.log(selectedData);
   if (selectedData?.userType) {
     SHOW_SPECIFIC_DIV("userMenuPopup");
     if (selectedData.userType === "student") {
       document.getElementById("login-user-name-lbl_user").innerText =
         selectedData.studentOrgName;
+
+      //Populating all info blocks
+      for (i = 0; i < student_label_arr.length; i++) {
+        document.getElementById(student_label_arr[i]).innerText =
+          `${selectedData.studentOrgName}`;
+      }
     } else {
       document.getElementById("login-user-name-lbl_user").innerText =
         `Teacher - ${selectedData.name}`;
