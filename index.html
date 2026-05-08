@@ -237,6 +237,10 @@
               <p id="login-user-name-lbl_user"></p>
             </div>
 
+            <button class="green" onclick="openAcademicReportsScreen()">
+              View Academic Reports
+            </button>
+
             <button
               class="green"
               onclick="openAdmissionKitOpenScreen()"
@@ -246,6 +250,26 @@
             </button>
 
             <button class="red" onclick="onLogoutClick()">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="showAcademicReports">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="user-info-block">
+            <p id="showAcademicReportsHeading_lbl"></p>
+          </div>
+          <br />
+          <h2>Academic Reports</h2>
+          <div id="showAcademicReportsWindow"></div>
+          <div class="button-row">
+            <button class="red" onclick="SHOW_SPECIFIC_DIV('userMenuPopup')">
+              Back
+            </button>
           </div>
         </div>
       </div>
@@ -260,7 +284,7 @@
             <p id="parent-feedback-menu-lbl_user"></p>
           </div>
           <br />
-          <h2>Feeback/Suggestions/Issues</h2>
+          <h2>Feeback/Issues</h2>
           <div class="flex">
             <button
               class="blue"
@@ -538,5 +562,6 @@
     <script src="ScriptYearlyAdmissionKit.js"></script>
     <script src="ScriptGatePass.js"></script>
     <script src="ScriptFeedback.js"></script>
+    <script src="ScriptStudentDetails.js"></script>
   </body>
 </html>
