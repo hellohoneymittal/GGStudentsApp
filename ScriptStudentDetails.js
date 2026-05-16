@@ -1,3 +1,70 @@
+async function openTimeTableWindow() {
+  const outputData = await CALL_API(API_TYPE_CONSTANT.GET_CLASS_TIMETABLE, {
+    studentName: selectedStudent.studentName,
+  });
+  if (outputData?.status && outputData.data) {
+    if (
+      typeof outputData.data === "string" &&
+      outputData.data.includes("ERR")
+    ) {
+      SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No classes scheduled for you!");
+      return;
+    }
+
+    openVerifyDetailsWindow(
+      outputData.data.header,
+      [`Timetable for: ${outputData.data.className}`],
+      outputData.data.output,
+      backToUserMenu,
+      "",
+      "",
+      ["Ok"],
+    );
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the timetable!!");
+    return;
+  }
+}
+
+async function openDateSheetWindow() {
+  const outputData = await CALL_API(API_TYPE_CONSTANT.GET_DATESHEET, {
+    studentName: selectedStudent.studentName,
+  });
+  if (outputData?.status && outputData.data) {
+    if (typeof outputData.data === "string") {
+      if (outputData.data.includes("ERR"))
+        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      else SHOW_INFO_POPUP(outputData.data);
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No exams scheduled for you!");
+      return;
+    }
+
+    console.log(outputData.data);
+
+    openVerifyDetailsWindow(
+      outputData.data.header,
+      [`Datesheet for: ${outputData.data.examName}`],
+      outputData.data.output,
+      backToUserMenu,
+      "",
+      "",
+      ["Ok"],
+    );
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the datesheet!!");
+    return;
+  }
+}
+
 async function openAcademicReportsScreen() {
   let input_map;
   let i, j;

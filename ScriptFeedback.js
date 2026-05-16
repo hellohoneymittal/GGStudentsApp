@@ -279,15 +279,20 @@ function populateActionGrid(
 
   // Populate table rows dynamically from gridData
   for (let key in gridData) {
+    if (Object.keys(gridData[key]).length == 1) continue;
+
     const row = document.createElement("tr");
-    let spiritualFlag = gridData[key]["Spiritual Mentor's Name"] == "" ? 0 : 1;
     row.id = `${inputType}GridTRow_${instance}_${totalRows}`;
     row.dataset.name = `TableRow_${key}`;
 
     // Add each data field into a new table cell (td)
     columnNames.forEach((column) => {
-      if (gridData[key][column] == null) return;
       const td = document.createElement("td");
+      if (gridData[key][column] == null) {
+        td.innerText = "";
+        row.appendChild(td);
+        return;
+      }
 
       if (column === "Description") {
         const container = document.createElement("div");

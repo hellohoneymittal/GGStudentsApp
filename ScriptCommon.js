@@ -1,4 +1,4 @@
-let now = new Date()
+let now = new Date();
 
 function formatDuration(startTimestamp, endTimestamp) {
   // Calculate the difference in milliseconds
@@ -1367,4 +1367,118 @@ function initializedLiveSearchControlWithFullData(
     };
     ulList.appendChild(li);
   });
+}
+
+function backToUserMenu() {
+  SHOW_SPECIFIC_DIV("userMenuPopup");
+}
+
+//Populate Grid for verification
+function openVerifyDetailsWindow(
+  columnNames = [],
+  headerArr = [],
+  inputMap,
+  submitClassBack,
+  returnId = "",
+  gridHeading = "Verify Details",
+  buttonLables = ["Submit", "Back"],
+) {
+  const parent_popup = document.getElementById("verificationGridPopup");
+  const popup = document.getElementById("verificationGridSubPopup");
+  const verifySubmitButton = document.getElementById("verificationSubmitBtn");
+  const returnSubmitButton = document.getElementById("verificationBackButton");
+  const buttonRow = popup.querySelector(".button-row");
+  const gridheadingelement = document.getElementById("gridHeading");
+
+  if (gridHeading == "") gridheadingelement.hidden = true;
+  else gridheadingelement.innerHTML = gridHeading;
+
+  let cntr = 0;
+
+  verifySubmitButton.onclick = function () {
+    submitClassBack();
+  };
+
+  returnSubmitButton.hidden = true;
+
+  verifySubmitButton.innerHTML = buttonLables[0];
+
+  if (buttonLables.length == 2) {
+    returnSubmitButton.innerHTML = buttonLables[1];
+    returnSubmitButton.onclick = function () {
+      SHOW_SPECIFIC_DIV(returnId);
+    };
+
+    returnSubmitButton.hidden = false;
+  }
+
+  //Removing all elements or cleanup
+  const heading = popup.querySelector(".heading");
+
+  let current = heading.nextElementSibling;
+
+  while (current && current !== buttonRow) {
+    const next = current.nextElementSibling;
+    current.remove();
+    current = next;
+  }
+
+  for (cntr = 0; cntr < headerArr.length; cntr++) {
+    // Add Header element
+    const header = document.createElement("div");
+    header.className = "heading";
+    header.id = `verifyDetailsGridStatusText_${cntr}`;
+    header.style.marginTop = "10px";
+    popup.insertBefore(header, buttonRow);
+
+    // Add Table
+
+    const container = document.createElement("div");
+    console.log(
+      `Creating container with ID verifyDetailsGridContainer_${cntr}`,
+    );
+
+    container.id = `verifyDetailsGridContainer_${cntr}`;
+
+    container.classList.add(
+      "collection-table-container",
+      "scrollable-content-table",
+    );
+
+    // Avoid style string
+    container.style.marginTop = "10px";
+
+    // TABLE
+    const table = document.createElement("table");
+    table.id = `verifyDetailsGridTable_${cntr}`;
+
+    // THEAD
+    const thead = document.createElement("thead");
+    thead.id = `verifyDetailsGridTHead_${cntr}`;
+    thead.classList.add("table-header");
+
+    // TBODY
+    const tbody = document.createElement("tbody");
+    tbody.id = `verifyDetailsGridTBody_${cntr}`;
+    tbody.innerHTML = "";
+
+    // Build hierarchy
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    container.appendChild(table);
+
+    popup.insertBefore(container, buttonRow);
+
+    populateActionGrid(
+      `verifyDetails`,
+      headerArr[cntr],
+      columnNames,
+      inputMap[headerArr[cntr]],
+      cntr,
+    );
+  }
+
+  // Show the parent popup
+  SHOW_SPECIFIC_DIV(parent_popup.id);
 }

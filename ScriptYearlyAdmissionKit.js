@@ -961,7 +961,3 @@ function backToAllStuWindow() {
   }
   SHOW_SPECIFIC_DIV("studentListPopup");
 }
-
-function backToUserMenu() {
-  SHOW_SPECIFIC_DIV("userMenuPopup");
-}
