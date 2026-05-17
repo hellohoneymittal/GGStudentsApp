@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="StylesCommon.css" />
     <link rel="stylesheet" href="StylesSpecific.css" />
+    <link rel="stylesheet" href="StylesAttendance.css" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
@@ -261,16 +262,20 @@
               <p id="login-user-name-lbl_user"></p>
             </div>
 
-            <button class="green" onclick="openAcademicReportsScreen()">
-              View Academic Reports
-            </button>
-
             <button class="green" onclick="openTimeTableWindow()">
               View Class Timetable
             </button>
 
+            <button class="green" onclick="openAttendanceDashboard()">
+              View My Attendance
+            </button>
+
             <button class="green" onclick="openDateSheetWindow()">
               View Examination Datesheet
+            </button>
+
+            <button class="green" onclick="openAcademicReportsScreen()">
+              View Academic Reports
             </button>
 
             <button
@@ -298,6 +303,66 @@
           <br />
           <h2>Academic Reports</h2>
           <div id="showAcademicReportsWindow"></div>
+          <div class="button-row">
+            <button class="red" onclick="SHOW_SPECIFIC_DIV('userMenuPopup')">
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="showAttendanceReport">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="user-info-block">
+            <p id="showAttendanceReportsHeading_lbl"></p>
+          </div>
+          <br />
+          <h2>Attendance Report</h2>
+          <div>
+            <select id="sessionSelect">
+              <option value="">---------Select Session--------</option>
+              <option value="Annual Examination">Till Today</option>
+              <option value="Unit Test 1">Unit Test 1</option>
+              <option value="Unit Test 2">Unit Test 2</option>
+              <option value="Unit Test 3">Unit Test 3</option>
+              <option value="Unit Test 4">Unit Test 4</option>
+              <option value="Unit Test 5">Unit Test 5</option>
+              <option value="Unit Test 6">Unit Test 6</option>
+            </select>
+          </div>
+
+          <!-- SUMMARY -->
+          <div class="summary-grid">
+            <div class="summary-card">
+              <h3>Overall Attendance</h3>
+              <br />
+              <p id="overallAttendance">0%</p>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="table-card">
+            <div class="section-title">Attendance Details</div>
+
+            <div style="overflow: auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Present</th>
+                    <th>Total</th>
+                    <th>Attendance %</th>
+                  </tr>
+                </thead>
+
+                <tbody id="attendanceTableBody"></tbody>
+              </table>
+            </div>
+          </div>
           <div class="button-row">
             <button class="red" onclick="SHOW_SPECIFIC_DIV('userMenuPopup')">
               Back

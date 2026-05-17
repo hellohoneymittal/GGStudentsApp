@@ -169,7 +169,6 @@ body {
 .popup-content input[type="text"],
 .popup-content input[type="number"],
 .popup-content textarea,
-.popup-content select,
 .password-popup-content input[type="text"] {
   width: 100%;
   padding: 10px;
@@ -179,6 +178,20 @@ body {
   border-radius: 8px;
   font-size: 1rem;
   box-sizing: border-box;
+  background-color: #fff5ea;
+  font-family: Arial, sans-serif;
+}
+
+.popup-content select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  font-weight: bold;
   background-color: #fff5ea;
   font-family: Arial, sans-serif;
 }
@@ -234,6 +247,8 @@ body {
   background-color: #fff5ea;
   color: #333;
   font-family: Arial, sans-serif;
+  text-align: center;
+  text-align-last: center;
 }
 
 .popup-content .green,
