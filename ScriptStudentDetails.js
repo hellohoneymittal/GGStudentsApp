@@ -1,3 +1,17 @@
+let backendData = {};
+
+const sessionSelect = document.getElementById("sessionSelect");
+
+const tableBody = document.getElementById("attendanceTableBody");
+
+const overallAttendance = document.getElementById("overallAttendance");
+
+const summaryGrid = document.querySelector(".summary-grid");
+
+const tableCard = document.querySelector(".table-card");
+
+sessionSelect.addEventListener("change", loadAttendance);
+
 async function openTimeTableWindow() {
   const outputData = await CALL_API(API_TYPE_CONSTANT.GET_CLASS_TIMETABLE, {
     studentName: selectedStudent.studentName,
@@ -187,4 +201,139 @@ function createReportAccordion(input_data, inputId) {
         header.classList.toggle("active");
       });
     });
+}
+
+function loadAttendance() {
+  const selectedSession = sessionSelect.value;
+  overallAttendance.innerText = "0%";
+  tableBody.innerHTML = "";
+
+  console.log(selectedSession);
+
+  if (selectedSession === "") {
+    summaryGrid.style.display = "none";
+
+    tableCard.style.display = "none";
+
+    return;
+  }
+
+  summaryGrid.style.display = "block";
+
+  tableCard.style.display = "block";
+
+  let subjectMap = {};
+
+  processSessionData(backendData[selectedSession] || "", subjectMap);
+
+  const subjectsArray = Object.entries(subjectMap).map(([subject, values]) => ({
+    subject,
+    present: values.present,
+    total: values.total,
+    percentage: ((values.present / values.total) * 100).toFixed(2),
+  }));
+
+  renderSummary(subjectsArray);
+  renderTable(subjectsArray);
+}
+
+function processSessionData(text, subjectMap) {
+  const lines = text.split("\n");
+
+  lines.forEach((line) => {
+    const match = line.match(/(.+) - (\d+)\/(\d+)/);
+
+    if (!match) return;
+
+    const subject = match[1].trim();
+
+    const present = Number(match[2]);
+    const total = Number(match[3]);
+
+    if (!subjectMap[subject]) {
+      subjectMap[subject] = {
+        present: 0,
+        total: 0,
+      };
+    }
+
+    subjectMap[subject].present += present;
+    subjectMap[subject].total += total;
+  });
+}
+
+function renderSummary(data) {
+  if (data.length === 0) {
+    return;
+  }
+
+  let totalPresent = 0;
+  let totalClasses = 0;
+
+  data.forEach((item) => {
+    totalPresent += item.present;
+    totalClasses += item.total;
+  });
+
+  const overall = ((totalPresent / totalClasses) * 100).toFixed(2);
+
+  overallAttendance.innerText = overall + "%";
+}
+
+function renderTable(data) {
+  tableBody.innerHTML = "";
+
+  data.forEach((item) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+
+          <td>${item.subject}</td>
+
+          <td>${item.present}</td>
+
+          <td>${item.total}</td>
+
+          <td>${item.percentage}%</td>
+
+        `;
+
+    tableBody.appendChild(row);
+  });
+}
+
+async function openAttendanceDashboard() {
+  sessionSelect.value = "";
+  overallAttendance.innerText = "0%";
+
+  // CLEAR TABLE
+  tableBody.innerHTML = "";
+
+  summaryGrid.style.display = "none";
+  tableCard.style.display = "none";
+
+  const outputData = await CALL_API(API_TYPE_CONSTANT.GET_STUDENT_ATTENDANCE, {
+    studentName: selectedStudent.studentName,
+  });
+
+  if (outputData?.status && outputData.data) {
+    if (typeof outputData.data === "string") {
+      if (outputData.data.includes("ERR")) {
+        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      } else SHOW_INFO_POPUP(outputData.data);
+
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No attendance details found!");
+      return;
+    }
+
+    backendData = outputData.data.output;
+    // SHOW CONTAINER
+    SHOW_SPECIFIC_DIV("showAttendanceReport");
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the attendance!!");
+  }
 }

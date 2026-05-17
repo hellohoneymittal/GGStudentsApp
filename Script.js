@@ -1,6 +1,9 @@
 let selectedStudent = {};
 let selectedTeacher = {};
-let student_label_arr = ["showAcademicReportsHeading_lbl"];
+let student_label_arr = [
+  "showAcademicReportsHeading_lbl",
+  "showAttendanceReportsHeading_lbl",
+];
 
 document.getElementById("passworTxtBox").addEventListener("input", function () {
   let password_input = this.value;
@@ -21,6 +24,7 @@ document.getElementById("passworTxtBox").addEventListener("input", function () {
 async function openLoginScreen() {
   document.getElementById("passworTxtBox").value = "";
   document.getElementById("passworTxtBoxError").innerHTML = "";
+  document.getElementById("submitPassBtn").disabled = true;
 
   const loginData = await DB_GET(
     INDEX_DB.storeKey,
