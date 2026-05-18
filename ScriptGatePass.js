@@ -1,5 +1,6 @@
 let enteredMobileNumber = "";
 let parentChildrenData = {};
+let parentGatePassData = {};
 let parentOf = "";
 let parent_label_arr = [
   "parent-feedback-input-lbl_user",
@@ -120,21 +121,38 @@ async function submitMobileNumber() {
   }
 }
 
-function openStudentPassWindow() {
-  if (parentChildrenData.data.infoMsg) {
-    console.log(
-      "Information from Parent Mobile Function:\n\n" +
-        parentChildrenData.data.infoMsg,
+async function openStudentPassWindow() {
+  parentGatePassData = await CALL_API("GET_CHILDREN_FOR_GATEPASS", {
+    inputData: enteredMobileNumber,
+  });
+
+  if (parentGatePassData?.status == "success" && parentGatePassData.data) {
+    if (
+      typeof parentGatePassData.data === "string" &&
+      parentGatePassData.data.includes("ERR")
+    ) {
+      SHOW_ERROR_POPUP(parentGatePassData.data.split("ERR: ")[1]);
+      return;
+    }
+
+    if (parentGatePassData.data.infoMsg) {
+      console.log(
+        "Information from Parent Mobile Function:\n\n" +
+          parentGatePassData.data.infoMsg,
+      );
+      SHOW_INFO_POPUP(parentGatePassData.data.infoMsg);
+      SHOW_SPECIFIC_DIV("parentMenuPopup");
+      return;
+    }
+
+    populateStudentListForGatePass(
+      parentGatePassData.data.output,
+      enteredMobileNumber,
     );
-    SHOW_INFO_POPUP(parentChildrenData.data.infoMsg);
-    SHOW_SPECIFIC_DIV("parentMenuPopup");
+  } else {
+    SHOW_ERROR_POPUP("Some problem in fetching Gate Pass Students!");
     return;
   }
-
-  populateStudentListForGatePass(
-    parentChildrenData.data.output,
-    enteredMobileNumber,
-  );
 }
 
 function populateStudentListForGatePass(input_list, input_mobile) {
@@ -177,8 +195,17 @@ function populateStudentListForGatePass(input_list, input_mobile) {
     input_element.id = id;
 
     let label_element = document.createElement("label");
+    label_element.innerHTML = id;
     label_element.className = "custom-label-radio-content-custom-box";
+
     if (lastClassTime == "23:59") {
+      label_element.innerHTML +=
+        " CANNOT be requested as NOT a current resident!";
+      input_element.disabled = true;
+      label_element.disabled = true;
+      label_element.className =
+        "custom-label-radio-content-custom-box-disabled";
+    } else if (lastClassTime == "23:58") {
       console.log("Hosteler");
       label_element.classList.add("required");
       input_element.id += "_requiredHostel";
@@ -189,8 +216,6 @@ function populateStudentListForGatePass(input_list, input_mobile) {
       label_element.classList.add("required");
       input_element.id += "_required";
     }
-
-    label_element.innerHTML = id;
 
     option_element.appendChild(input_element);
     option_element.appendChild(label_element);
@@ -269,4 +294,16 @@ async function submitNames() {
     SHOW_ERROR_POPUP("Internal error!");
     return;
   }
+}
+
+function showStudentPassword() {
+  openVerifyDetailsWindow(
+    ["Student Name", "Admission Number", "Password"],
+    ["Student Details"],
+    parentChildrenData.data.output,
+    backToParentMenu,
+    "",
+    "",
+    ["Ok"],
+  );
 }

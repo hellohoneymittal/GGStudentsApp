@@ -234,6 +234,9 @@
               <p id="parent-menu-lbl_user"></p>
             </div>
 
+            <button class="green" onclick="showStudentPassword()">
+              View Student Password
+            </button>
             <button class="green" onclick="openStudentPassWindow()">
               Request Student Exit Pass
             </button>
@@ -287,6 +290,26 @@
             </button>
 
             <button class="red" onclick="onLogoutClick()">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup" id="showStudentPassword">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <div class="user-info-block">
+            <p id="showStudentPasswordHeading_lbl"></p>
+          </div>
+          <br />
+          <h2>Student Password</h2>
+          <div id="showAcademicReportsWindow"></div>
+          <div class="button-row">
+            <button class="red" onclick="SHOW_SPECIFIC_DIV('userMenuPopup')">
+              Back
+            </button>
           </div>
         </div>
       </div>
@@ -399,7 +422,7 @@
               class="red"
               onclick="
                 resetFeedbackForm();
-                SHOW_SPECIFIC_DIV('parentMenuPopup');
+                backToParentMenu();
               "
             >
               Back
@@ -445,12 +468,7 @@
           </form>
 
           <div class="button-row">
-            <button
-              class="purple"
-              onclick="SHOW_SPECIFIC_DIV('parentMenuPopup')"
-            >
-              Home
-            </button>
+            <button class="purple" onclick="backToParentMenu()">Home</button>
             <button
               class="red"
               onclick="
@@ -518,18 +536,7 @@
           </div>
 
           <div class="button-row">
-            <button
-              class="purple"
-              onclick="
-                document.getElementById('parentMobileBox').value = '';
-                document.getElementById('parentMobileBoxError').innerHTML = '';
-                document.getElementById('submitMobileNumberBtn').disabled =
-                  true;
-                SHOW_SPECIFIC_DIV('parentMobilePopup');
-              "
-            >
-              Back
-            </button>
+            <button class="purple" onclick="backToParentMenu()">Back</button>
             <button class="red" onclick="resetGatePassForm()">Reset</button>
             <button
               class="green"

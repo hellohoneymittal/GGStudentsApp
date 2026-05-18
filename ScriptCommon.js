@@ -1373,6 +1373,10 @@ function backToUserMenu() {
   SHOW_SPECIFIC_DIV("userMenuPopup");
 }
 
+function backToParentMenu() {
+  SHOW_SPECIFIC_DIV("parentMenuPopup");
+}
+
 //Populate Grid for verification
 function openVerifyDetailsWindow(
   columnNames = [],
