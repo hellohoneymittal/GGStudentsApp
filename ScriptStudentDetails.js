@@ -337,3 +337,69 @@ async function openAttendanceDashboard() {
     SHOW_ERROR_POPUP("Unable to fetch the attendance!!");
   }
 }
+
+async function openComputerExamWindow() {
+  let i, j;
+  const outputData = await CALL_API("GET_COMPUTER_EXAMS", {
+    studentName: selectedStudent.studentName,
+    studentClass: selectedStudent.stdClass,
+  });
+
+  if (typeof outputData?.data === "string") {
+    if (outputData.data.includes("ERR")) {
+      SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+    } else SHOW_INFO_POPUP(outputData.data);
+    return;
+  }
+
+  if (outputData && Object.keys(outputData.data.output).length == 0) {
+    SHOW_INFO_POPUP("No Computer Exam Found for today!");
+    return;
+  }
+
+  if (!outputData) {
+    SHOW_ERROR_POPUP("Problem in fetching Computer Exams!");
+    return;
+  }
+
+  let apiOutput = outputData.data.output;
+
+  console.log(apiOutput);
+
+  const [start, end] = apiOutput.time_slot.split(" - ");
+
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+
+  if (currentMinutes < startMinutes) {
+    console.log(
+      `Current time slot is not within the exam time range: ${apiOutput.time_slot}`,
+    );
+    SHOW_ERROR_POPUP(
+      "❌ Action Disallowed ❌\n\n⚠️Examination has NOT STARTED!",
+    );
+    return;
+  } else if (currentMinutes > endMinutes) {
+    console.log(
+      `Current time slot is not within the exam time range: ${apiOutput.time_slot}`,
+    );
+    SHOW_ERROR_POPUP("❌ Action Disallowed ❌\n\n⚠️Examination IS OVER!");
+    return;
+  }
+
+  document.getElementById("computerExamHeading").innerHTML =
+    `Details for ${apiOutput.exam_name}`;
+
+  document.getElementById("viewQPBtn").onclick = function () {
+    window.open(apiOutput.question_paper, "_blank");
+  };
+
+  document.getElementById("openWorkBtn").onclick = function () {
+    window.open(apiOutput.work_area, "_blank");
+  };
+
+  // Show the parent popup
+  SHOW_SPECIFIC_DIV("computerExamWindow");
+}

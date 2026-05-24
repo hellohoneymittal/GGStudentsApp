@@ -1486,3 +1486,8 @@ function openVerifyDetailsWindow(
   // Show the parent popup
   SHOW_SPECIFIC_DIV(parent_popup.id);
 }
+
+function timeToMinutes(t) {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
