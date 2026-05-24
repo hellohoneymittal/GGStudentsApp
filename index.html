@@ -277,6 +277,10 @@
               View Examination Datesheet
             </button>
 
+            <button class="green" onclick="openComputerExamWindow()">
+              My Computers Examination
+            </button>
+
             <button class="green" onclick="openAcademicReportsScreen()">
               View Academic Reports
             </button>
@@ -294,18 +298,20 @@
         </div>
       </div>
 
-      <div class="popup" id="showStudentPassword">
+      <div class="popup" id="computerExamWindow">
         <div class="popup-content scrollable-content">
           <img
             src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
             alt="School Logo"
           />
           <div class="user-info-block">
-            <p id="showStudentPasswordHeading_lbl"></p>
+            <p id="computerExamHeading_lbl"></p>
           </div>
           <br />
-          <h2>Student Password</h2>
-          <div id="showAcademicReportsWindow"></div>
+          <h2 id="computerExamHeading"></h2>
+
+          <button class="green" id="viewQPBtn">View Question Paper</button>
+          <button class="green" id="openWorkBtn">Open Work Area</button>
           <div class="button-row">
             <button class="red" onclick="SHOW_SPECIFIC_DIV('userMenuPopup')">
               Back

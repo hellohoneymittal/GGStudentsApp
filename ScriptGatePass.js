@@ -76,11 +76,6 @@ document
     }
   });
 
-function timeToMinutes(t) {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + m;
-}
-
 async function submitMobileNumber() {
   let mobileNumber = document.getElementById("parentMobileBox").value;
   let error_div = document.getElementById("parentMobileBoxError");
