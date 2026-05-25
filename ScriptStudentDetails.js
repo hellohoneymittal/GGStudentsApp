@@ -1,9 +1,11 @@
 let backendData = {};
+let syllabusBackendData = {};
 
 const sessionSelect = document.getElementById("sessionSelect");
+const examSessionSelect = document.getElementById("examSessionSelect");
 
 const tableBody = document.getElementById("attendanceTableBody");
-
+const examTableBody = document.getElementById("examSyllabusTableBody");
 const overallAttendance = document.getElementById("overallAttendance");
 
 const summaryGrid = document.querySelector(".summary-grid");
@@ -11,6 +13,7 @@ const summaryGrid = document.querySelector(".summary-grid");
 const tableCard = document.querySelector(".table-card");
 
 sessionSelect.addEventListener("change", loadAttendance);
+examSessionSelect.addEventListener("change", loadSyllabus);
 
 async function openTimeTableWindow() {
   const outputData = await CALL_API(API_TYPE_CONSTANT.GET_CLASS_TIMETABLE, {
@@ -237,6 +240,26 @@ function loadAttendance() {
   renderTable(subjectsArray);
 }
 
+function loadSyllabus() {
+  const selectedSession = examSessionSelect.value;
+
+  examTableBody.innerHTML = "";
+
+  console.log(selectedSession);
+
+  if (selectedSession === "") {
+    tableCard.style.display = "none";
+
+    return;
+  }
+
+  tableCard.style.display = "block";
+
+  console.log(syllabusBackendData[selectedSession]);
+
+  renderExamTable(syllabusBackendData[selectedSession]);
+}
+
 function processSessionData(text, subjectMap) {
   const lines = text.split("\n");
 
@@ -302,6 +325,25 @@ function renderTable(data) {
   });
 }
 
+function renderExamTable(data) {
+  examTableBody.innerHTML = "";
+  let i;
+
+  for (i in data) {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+
+          <td>${i}</td>
+
+          <td>${data[i]}</td>
+
+        `;
+
+    examTableBody.appendChild(row);
+  }
+}
+
 async function openAttendanceDashboard() {
   sessionSelect.value = "";
   overallAttendance.innerText = "0%";
@@ -335,6 +377,40 @@ async function openAttendanceDashboard() {
     SHOW_SPECIFIC_DIV("showAttendanceReport");
   } else {
     SHOW_ERROR_POPUP("Unable to fetch the attendance!!");
+  }
+}
+
+async function openSyllabusDashboard() {
+  examSessionSelect.value = "";
+
+  // CLEAR TABLE
+  examTableBody.innerHTML = "";
+
+  tableCard.style.display = "none";
+
+  const outputData = await CALL_API("GET_EXAM_SYLLABUS", {
+    studentClass: selectedStudent.stdClass,
+  });
+
+  if (outputData?.status && outputData.data) {
+    if (typeof outputData.data === "string") {
+      if (outputData.data.includes("ERR")) {
+        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      } else SHOW_INFO_POPUP(outputData.data);
+
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No syllabus found!");
+      return;
+    }
+
+    syllabusBackendData = outputData.data.output;
+    // SHOW CONTAINER
+    SHOW_SPECIFIC_DIV("showExamSyllabus");
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the syllabus!!");
   }
 }
 

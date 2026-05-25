@@ -4,6 +4,7 @@ let student_label_arr = [
   "showAcademicReportsHeading_lbl",
   "showAttendanceReportsHeading_lbl",
   "computerExamHeading_lbl",
+  "showExamSyllabusHeading_lbl",
 ];
 
 document.getElementById("passworTxtBox").addEventListener("input", function () {
