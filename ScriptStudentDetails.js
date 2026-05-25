@@ -10,8 +10,6 @@ const overallAttendance = document.getElementById("overallAttendance");
 
 const summaryGrid = document.querySelector(".summary-grid");
 
-const tableCard = document.querySelector(".table-card");
-
 sessionSelect.addEventListener("change", loadAttendance);
 examSessionSelect.addEventListener("change", loadSyllabus);
 
@@ -208,6 +206,9 @@ function createReportAccordion(input_data, inputId) {
 
 function loadAttendance() {
   const selectedSession = sessionSelect.value;
+  const tableCard = document
+    .getElementById("showAttendanceReport")
+    .querySelector(".table-card");
   overallAttendance.innerText = "0%";
   tableBody.innerHTML = "";
 
@@ -242,6 +243,9 @@ function loadAttendance() {
 
 function loadSyllabus() {
   const selectedSession = examSessionSelect.value;
+  const tableCard = document
+    .getElementById("showExamSyllabus")
+    .querySelector(".table-card");
 
   examTableBody.innerHTML = "";
 
@@ -347,6 +351,9 @@ function renderExamTable(data) {
 async function openAttendanceDashboard() {
   sessionSelect.value = "";
   overallAttendance.innerText = "0%";
+  const tableCard = document
+    .getElementById("showAttendanceReport")
+    .querySelector(".table-card");
 
   // CLEAR TABLE
   tableBody.innerHTML = "";
@@ -382,6 +389,9 @@ async function openAttendanceDashboard() {
 
 async function openSyllabusDashboard() {
   examSessionSelect.value = "";
+  const tableCard = document
+    .getElementById("showExamSyllabus")
+    .querySelector(".table-card");
 
   // CLEAR TABLE
   examTableBody.innerHTML = "";
