@@ -108,6 +108,148 @@ async function openAcademicReportsScreen() {
   }
 }
 
+async function openAttendanceDashboard() {
+  sessionSelect.value = "";
+  overallAttendance.innerText = "0%";
+  const tableCard = document
+    .getElementById("showAttendanceReport")
+    .querySelector(".table-card");
+
+  // CLEAR TABLE
+  tableBody.innerHTML = "";
+
+  summaryGrid.style.display = "none";
+  tableCard.style.display = "none";
+
+  const outputData = await CALL_API(API_TYPE_CONSTANT.GET_STUDENT_ATTENDANCE, {
+    studentName: selectedStudent.studentName,
+  });
+
+  if (outputData?.status && outputData.data) {
+    if (typeof outputData.data === "string") {
+      if (outputData.data.includes("ERR")) {
+        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      } else SHOW_INFO_POPUP(outputData.data);
+
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No attendance details found!");
+      return;
+    }
+
+    backendData = outputData.data.output;
+    // SHOW CONTAINER
+    SHOW_SPECIFIC_DIV("showAttendanceReport");
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the attendance!!");
+  }
+}
+
+async function openSyllabusDashboard() {
+  examSessionSelect.value = "";
+  const tableCard = document
+    .getElementById("showExamSyllabus")
+    .querySelector(".table-card");
+
+  // CLEAR TABLE
+  examTableBody.innerHTML = "";
+
+  tableCard.style.display = "none";
+
+  const outputData = await CALL_API("GET_EXAM_SYLLABUS", {
+    studentClass: selectedStudent.stdClass,
+  });
+
+  if (outputData?.status && outputData.data) {
+    if (typeof outputData.data === "string") {
+      if (outputData.data.includes("ERR")) {
+        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      } else SHOW_INFO_POPUP(outputData.data);
+
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No syllabus found!");
+      return;
+    }
+
+    syllabusBackendData = outputData.data.output;
+    // SHOW CONTAINER
+    SHOW_SPECIFIC_DIV("showExamSyllabus");
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the syllabus!!");
+  }
+}
+
+async function openComputerExamWindow() {
+  let i, j;
+  const outputData = await CALL_API("GET_COMPUTER_EXAMS", {
+    studentName: selectedStudent.studentName,
+    studentClass: selectedStudent.stdClass,
+  });
+
+  if (typeof outputData?.data === "string") {
+    if (outputData.data.includes("ERR")) {
+      SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+    } else SHOW_INFO_POPUP(outputData.data);
+    return;
+  }
+
+  if (outputData && Object.keys(outputData.data.output).length == 0) {
+    SHOW_INFO_POPUP("No Computer Exam Found for today!");
+    return;
+  }
+
+  if (!outputData) {
+    SHOW_ERROR_POPUP("Problem in fetching Computer Exams!");
+    return;
+  }
+
+  let apiOutput = outputData.data.output;
+
+  console.log(apiOutput);
+
+  const [start, end] = apiOutput.time_slot.split(" - ");
+
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+
+  if (currentMinutes < startMinutes) {
+    console.log(
+      `Current time slot is not within the exam time range: ${apiOutput.time_slot}`,
+    );
+    SHOW_ERROR_POPUP(
+      "❌ Action Disallowed ❌\n\n⚠️Examination has NOT STARTED!",
+    );
+    return;
+  } else if (currentMinutes > endMinutes) {
+    console.log(
+      `Current time slot is not within the exam time range: ${apiOutput.time_slot}`,
+    );
+    SHOW_ERROR_POPUP("❌ Action Disallowed ❌\n\n⚠️Examination IS OVER!");
+    return;
+  }
+
+  document.getElementById("computerExamHeading").innerHTML =
+    `Details for ${apiOutput.exam_name}`;
+
+  document.getElementById("viewQPBtn").onclick = function () {
+    window.open(apiOutput.question_paper, "_blank");
+  };
+
+  document.getElementById("openWorkBtn").onclick = function () {
+    window.open(apiOutput.work_area, "_blank");
+  };
+
+  // Show the parent popup
+  SHOW_SPECIFIC_DIV("computerExamWindow");
+}
+
 function createReportAccordion(input_data, inputId) {
   const mainContainer = document.getElementById(inputId);
   mainContainer.innerHTML = "";
@@ -346,146 +488,4 @@ function renderExamTable(data) {
 
     examTableBody.appendChild(row);
   }
-}
-
-async function openAttendanceDashboard() {
-  sessionSelect.value = "";
-  overallAttendance.innerText = "0%";
-  const tableCard = document
-    .getElementById("showAttendanceReport")
-    .querySelector(".table-card");
-
-  // CLEAR TABLE
-  tableBody.innerHTML = "";
-
-  summaryGrid.style.display = "none";
-  tableCard.style.display = "none";
-
-  const outputData = await CALL_API(API_TYPE_CONSTANT.GET_STUDENT_ATTENDANCE, {
-    studentName: selectedStudent.studentName,
-  });
-
-  if (outputData?.status && outputData.data) {
-    if (typeof outputData.data === "string") {
-      if (outputData.data.includes("ERR")) {
-        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
-      } else SHOW_INFO_POPUP(outputData.data);
-
-      return;
-    }
-
-    if (Object.keys(outputData.data.output).length == 0) {
-      SHOW_INFO_POPUP("No attendance details found!");
-      return;
-    }
-
-    backendData = outputData.data.output;
-    // SHOW CONTAINER
-    SHOW_SPECIFIC_DIV("showAttendanceReport");
-  } else {
-    SHOW_ERROR_POPUP("Unable to fetch the attendance!!");
-  }
-}
-
-async function openSyllabusDashboard() {
-  examSessionSelect.value = "";
-  const tableCard = document
-    .getElementById("showExamSyllabus")
-    .querySelector(".table-card");
-
-  // CLEAR TABLE
-  examTableBody.innerHTML = "";
-
-  tableCard.style.display = "none";
-
-  const outputData = await CALL_API("GET_EXAM_SYLLABUS", {
-    studentClass: selectedStudent.stdClass,
-  });
-
-  if (outputData?.status && outputData.data) {
-    if (typeof outputData.data === "string") {
-      if (outputData.data.includes("ERR")) {
-        SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
-      } else SHOW_INFO_POPUP(outputData.data);
-
-      return;
-    }
-
-    if (Object.keys(outputData.data.output).length == 0) {
-      SHOW_INFO_POPUP("No syllabus found!");
-      return;
-    }
-
-    syllabusBackendData = outputData.data.output;
-    // SHOW CONTAINER
-    SHOW_SPECIFIC_DIV("showExamSyllabus");
-  } else {
-    SHOW_ERROR_POPUP("Unable to fetch the syllabus!!");
-  }
-}
-
-async function openComputerExamWindow() {
-  let i, j;
-  const outputData = await CALL_API("GET_COMPUTER_EXAMS", {
-    studentName: selectedStudent.studentName,
-    studentClass: selectedStudent.stdClass,
-  });
-
-  if (typeof outputData?.data === "string") {
-    if (outputData.data.includes("ERR")) {
-      SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
-    } else SHOW_INFO_POPUP(outputData.data);
-    return;
-  }
-
-  if (outputData && Object.keys(outputData.data.output).length == 0) {
-    SHOW_INFO_POPUP("No Computer Exam Found for today!");
-    return;
-  }
-
-  if (!outputData) {
-    SHOW_ERROR_POPUP("Problem in fetching Computer Exams!");
-    return;
-  }
-
-  let apiOutput = outputData.data.output;
-
-  console.log(apiOutput);
-
-  const [start, end] = apiOutput.time_slot.split(" - ");
-
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-  const startMinutes = timeToMinutes(start);
-  const endMinutes = timeToMinutes(end);
-
-  if (currentMinutes < startMinutes) {
-    console.log(
-      `Current time slot is not within the exam time range: ${apiOutput.time_slot}`,
-    );
-    SHOW_ERROR_POPUP(
-      "❌ Action Disallowed ❌\n\n⚠️Examination has NOT STARTED!",
-    );
-    return;
-  } else if (currentMinutes > endMinutes) {
-    console.log(
-      `Current time slot is not within the exam time range: ${apiOutput.time_slot}`,
-    );
-    SHOW_ERROR_POPUP("❌ Action Disallowed ❌\n\n⚠️Examination IS OVER!");
-    return;
-  }
-
-  document.getElementById("computerExamHeading").innerHTML =
-    `Details for ${apiOutput.exam_name}`;
-
-  document.getElementById("viewQPBtn").onclick = function () {
-    window.open(apiOutput.question_paper, "_blank");
-  };
-
-  document.getElementById("openWorkBtn").onclick = function () {
-    window.open(apiOutput.work_area, "_blank");
-  };
-
-  // Show the parent popup
-  SHOW_SPECIFIC_DIV("computerExamWindow");
 }
