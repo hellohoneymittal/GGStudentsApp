@@ -246,6 +246,12 @@ async function openComputerExamWindow() {
     window.open(apiOutput.work_area, "_blank");
   };
 
+  document.getElementById("showLoginBtn").onclick = function () {
+    SHOW_INFO_POPUP(
+      `Id: ${apiOutput.login_id}\n\nPassword: ${apiOutput.login_pw}`,
+    );
+  };
+
   // Show the parent popup
   SHOW_SPECIFIC_DIV("computerExamWindow");
 }
