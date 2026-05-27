@@ -216,7 +216,7 @@ async function openComputerExamWindow() {
 
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const startMinutes = timeToMinutes(start);
+  const startMinutes = timeToMinutes(start) - 2;
   const endMinutes = timeToMinutes(end);
 
   if (currentMinutes < startMinutes) {
