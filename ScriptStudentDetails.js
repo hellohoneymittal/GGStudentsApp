@@ -186,6 +186,8 @@ async function openSyllabusDashboard() {
 
 async function openComputerExamWindow() {
   let i, j;
+  let now = new Date();
+
   const outputData = await CALL_API("GET_COMPUTER_EXAMS", {
     studentName: selectedStudent.studentName,
     studentClass: selectedStudent.stdClass,
@@ -217,7 +219,7 @@ async function openComputerExamWindow() {
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
   const startMinutes = timeToMinutes(start) - 2;
-  const endMinutes = timeToMinutes(end) + 20;
+  const endMinutes = timeToMinutes(end) + 10;
 
   if (currentMinutes < startMinutes) {
     console.log(
