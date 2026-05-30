@@ -13,9 +13,44 @@ const summaryGrid = document.querySelector(".summary-grid");
 sessionSelect.addEventListener("change", loadAttendance);
 examSessionSelect.addEventListener("change", loadSyllabus);
 
+async function openTeacherDetailsWindow() {
+  const outputData = await CALL_API("GET_TEACHER_DETAILS", {
+    studentName: selectedStudent.studentName,
+    studentClass: selectedStudent.stdClass,
+  });
+  if (outputData?.status && outputData.data) {
+    if (
+      typeof outputData.data === "string" &&
+      outputData.data.includes("ERR")
+    ) {
+      SHOW_ERROR_POPUP(outputData.data.split("ERR: ")[1]);
+      return;
+    }
+
+    if (Object.keys(outputData.data.output).length == 0) {
+      SHOW_INFO_POPUP("No teacher found for you!");
+      return;
+    }
+
+    openVerifyDetailsWindow(
+      outputData.data.header,
+      [`Teacher Details for ${selectedStudent.stdClass}`],
+      outputData.data.output,
+      backToUserMenu,
+      "",
+      "",
+      ["Ok"],
+    );
+  } else {
+    SHOW_ERROR_POPUP("Unable to fetch the teacher details!!");
+    return;
+  }
+}
+
 async function openTimeTableWindow() {
   const outputData = await CALL_API(API_TYPE_CONSTANT.GET_CLASS_TIMETABLE, {
     studentName: selectedStudent.studentName,
+    studentClass: selectedStudent.stdClass,
   });
   if (outputData?.status && outputData.data) {
     if (
