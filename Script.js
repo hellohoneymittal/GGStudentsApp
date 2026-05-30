@@ -7,6 +7,16 @@ let student_label_arr = [
   "showExamSyllabusHeading_lbl",
 ];
 
+document.querySelectorAll(".accordion-header").forEach((header) => {
+  header.addEventListener("click", () => {
+    const content = header.nextElementSibling;
+
+    content.classList.toggle("show");
+
+    header.classList.toggle("active");
+  });
+});
+
 document.getElementById("passworTxtBox").addEventListener("input", function () {
   let password_input = this.value;
   let error_div = document.getElementById("passworTxtBoxError");
