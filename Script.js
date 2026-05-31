@@ -86,8 +86,11 @@ function proceedStdLogin(selectedData) {
     //  STUDENT → SHOW ALL
     if (userType === "student") {
       allButtons.forEach((btn) => {
-        btn.style.display = "block";
+        if (!btn.classList.contains("accordion-header")) {
+          btn.style.display = "block";
+        }
       });
+
       return;
     }
 
