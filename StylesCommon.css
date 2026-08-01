@@ -199,12 +199,13 @@ body {
 .popup-content input[type="date"] {
   width: 100%;
   padding: 9px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
   font-size: 1rem;
   box-sizing: border-box;
+  background-color: #fff5ea;
 }
 
 .popup-content label {
@@ -754,8 +755,10 @@ body {
 }
 
 table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
+  border: 2px solid black;
 }
 
 thead {
