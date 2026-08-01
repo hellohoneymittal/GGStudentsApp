@@ -193,14 +193,16 @@ function populateStudentListForGatePass(input_list, input_mobile) {
     label_element.innerHTML = id;
     label_element.className = "custom-label-radio-content-custom-box";
 
-    if (lastClassTime == "23:59") {
-      label_element.innerHTML +=
-        " CANNOT be requested as NOT a current resident!";
-      input_element.disabled = true;
-      label_element.disabled = true;
-      label_element.className =
-        "custom-label-radio-content-custom-box-disabled";
-    } else if (lastClassTime == "23:58") {
+    // if (lastClassTime == "23:59") {
+    //   label_element.innerHTML +=
+    //     " CANNOT be requested as NOT a current resident!";
+    //   input_element.disabled = true;
+    //   label_element.disabled = true;
+    //   label_element.className =
+    //     "custom-label-radio-content-custom-box-disabled";
+    // } Commented by HPD to enable marking an exit even if the student is not in the system.
+
+    if (lastClassTime == "23:58" || lastClassTime == "23:59") {
       console.log("Hosteler");
       label_element.classList.add("required");
       input_element.id += "_requiredHostel";
