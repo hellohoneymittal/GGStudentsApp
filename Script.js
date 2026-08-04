@@ -5,6 +5,7 @@ let student_label_arr = [
   "showAttendanceReportsHeading_lbl",
   "computerExamHeading_lbl",
   "showExamSyllabusHeading_lbl",
+  "studentLeavesHeading_lbl",
 ];
 
 document.querySelectorAll(".accordion-header").forEach((header) => {

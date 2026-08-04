@@ -60,6 +60,10 @@ function convertDate(dateString) {
   return formattedDate;
 }
 
+function convertDateNew(input) {
+  return new Date(input).toLocaleDateString("en-GB");
+}
+
 function ShowPopup(id) {
   document.getElementById(id).style.display = "flex";
 }
@@ -847,7 +851,7 @@ function SHOW_CONFIRMATION_GRID_POPUP(
   columnNames.forEach((column) => {
     const th = document.createElement("th");
     th.textContent = column.displayName; // Use displayName for the header
-    th.style.border = "1px solid #ddd";
+    th.style.border = "1px solid #0a0101";
     th.style.padding = "8px";
     th.style.textAlign = "left";
     headerRow.appendChild(th);
@@ -866,7 +870,7 @@ function SHOW_CONFIRMATION_GRID_POPUP(
     columnNames.forEach((column) => {
       const td = document.createElement("td");
       td.textContent = item[column.actualName] ? item[column.actualName] : ""; // Use actualName to access the data
-      td.style.border = "1px solid #ddd";
+      td.style.border = "1px solid #0a0101";
       td.style.padding = "8px";
       row.appendChild(td);
     });

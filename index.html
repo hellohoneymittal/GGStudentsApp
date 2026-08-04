@@ -277,6 +277,10 @@ div<!doctype html>
           <br />
           <h2>Student Dashboard</h2>
 
+          <button class="green" onclick="openLeavesWindow()">
+            Apply Leaves
+          </button>
+
           <div class="accordion-item">
             <button class="accordion-header">
               My Details
@@ -756,6 +760,58 @@ div<!doctype html>
           </div>
         </div>
       </div>
+
+      <div class="popup" style="display: none" id="studentLeavesContainer">
+        <div class="popup-content scrollable-content">
+          <img
+            src="https://drive.google.com/thumbnail?id=15-SQ9oW0U2eX2vsWmyxvmhwu9Q1QgOZm&sz=w500"
+            alt="School Logo"
+          />
+          <h2>Apply Leave(s)</h2>
+          <div
+            class="user-info-block"
+            id="studentLeavesHeading_div"
+            style="display: none"
+          >
+            <p id="studentLeavesHeading_lbl"></p>
+          </div>
+
+          <form id="studentLeavesForm">
+            <label class="required">Start Date</label>
+            <input type="date" id="startdate" required />
+            <div class="error" id="startdateError"></div>
+
+            <label>End Date</label>
+            <input type="date" id="enddate" required />
+            <div class="error" id="enddateError"></div>
+
+            <label class="required">Reason for Leave(s)</label>
+            <textarea
+              id="leaveReason"
+              rows="3"
+              placeholder="Please enter atleast 15 characters!"
+              required
+              minlength="15"
+              disabled
+            ></textarea>
+            <div class="error" id="leaveReasonError"></div>
+          </form>
+
+          <div class="button-row">
+            <button
+              class="purple"
+              onclick="
+                resetLeaveForm();
+                SHOW_SPECIFIC_DIV('userMenuPopup');
+              "
+            >
+              Home
+            </button>
+            <button class="red" onclick="resetLeaveForm(1)">Reset</button>
+            <button class="green" id="leavesPassBtn" onclick="">Next</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="ScriptCommon.js"></script>
@@ -765,5 +821,6 @@ div<!doctype html>
     <script src="ScriptGatePass.js"></script>
     <script src="ScriptFeedback.js"></script>
     <script src="ScriptStudentDetails.js"></script>
+    <script src="ScriptLeaves.js"></script>
   </body>
 </html>
