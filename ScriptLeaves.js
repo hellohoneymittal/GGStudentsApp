@@ -178,6 +178,7 @@ function moveNextStep() {
   leaveData["end"] = endInput.value ? endInput.value : startInput.value;
   leaveData["reason"] = reasonBox.value.trim();
   leaveData["student"] = selectedStudent.studentName;
+  leaveData["whatsapp"] = 0;
 
   console.log(leaveData);
   console.log(result.gridData);
@@ -211,6 +212,11 @@ async function submitLeaves() {
       SHOW_SUCCESS_POPUP(
         "Leaves submitted Successfully for " + student_name + "!",
         () => {
+          leaveData["whatsapp"] = 1;
+          CALL_API_WITHOUT_LOADING(
+            API_TYPE_CONSTANT.SUBMIT_STUDENT_LEAVES,
+            leaveData,
+          );
           SHOW_SPECIFIC_DIV("userMenuPopup");
         },
       );
