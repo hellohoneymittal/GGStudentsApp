@@ -158,6 +158,7 @@ async function submitPass() {
 async function onLogoutClick() {
   selectedStudent = {};
   selectedTeacher = {};
+  stdFatherName = "";
   await DB_DELETE(INDEX_DB.storeKey, INDEX_DB.dbName, INDEX_DB.storeName);
   document.getElementById("passworTxtBox").value = "";
   document.getElementById("passworTxtBoxError").innerHTML = "";
