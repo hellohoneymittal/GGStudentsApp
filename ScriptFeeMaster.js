@@ -194,6 +194,7 @@ async function feeManagerSubmitButton() {
   if (response?.status === "success") {
     resetFee();
     SHOW_SUCCESS_POPUP("Data successfully saved.");
+    await populateFeeMasterGrid(true);
   } else {
     SHOW_ERROR_POPUP(response?.error);
   }
@@ -255,18 +256,24 @@ const columnMap = {
 
 const actions = [];
 
-async function populateFeeMasterGrid() {
+async function populateFeeMasterGrid(isLoadingRequired = false) {
   const payload = {
     mobileNo: enteredMobileNumber,
   };
-  const mergeConfig = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const mergeConfig = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
-  const response = await CALL_API_WITHOUT_LOADING(
-    "GET_FEE_MASTER_GRID_DATA",
-    payload,
-  );
+  let response = "";
+  if (isLoadingRequired) {
+    response = await CALL_API("GET_FEE_MASTER_GRID_DATA", payload);
+  } else {
+    response = await CALL_API_WITHOUT_LOADING(
+      "GET_FEE_MASTER_GRID_DATA",
+      payload,
+    );
+  }
+
   const finalData = MERGE_SHEET_DATA(response?.data, mergeConfig);
-  console.log(finalData);
+
   fillDynamicTableRows(finalData, "fmTableTHead", "fmTableTBody", actions, {
     enableSearch: true,
     enableSorting: true,
@@ -283,6 +290,7 @@ async function populateFeeMasterGrid() {
       Year: 8,
       Amount: 9,
       "File Url": 11,
+      "File Name": 12,
       Comment: 10,
     },
   });
