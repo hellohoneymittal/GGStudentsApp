@@ -299,39 +299,517 @@ function formatTimeToAMPM(timestamp) {
 }
 //#endregion common method
 
-// Function to generate table rows based on server data
-function fillDynamicTableRows(data, headerId, bodyId) {
+/**
+ * Dynamically generates an HTML table from Google Sheets array data.
+ * The first row of `data` is treated as table headers.
+ * Supports multiple configurable action buttons such as Edit, Delete, View, etc.
+ *
+ * @param {Array<Array>} data Google Sheets data where data[0] contains headers.
+ * @param {string} headerId DOM element ID for the table header.
+ * @param {string} bodyId DOM element ID for the table body.
+ * @param {Array<Object>} actions Optional action buttons with callback and payload.
+ * @param {Object} options Optional search and sorting configuration.
+
+const data = [
+  ["Status", "Name", "Month", "Year", "Amount", "Comment", "File URL"],
+  [
+    "Approved",
+    "Sachinandan Tiwari",
+    "May",
+    "2026",
+    "500",
+    "Fee Paid",
+    "Samrat_Tiwari_May_2026_100826",
+  ],
+  [
+    "Pending",
+    "Rahul Tiwari",
+    "June",
+    "2026",
+    "750",
+    "Payment Pending",
+    "Rahul_Tiwari_June_2026",
+  ],
+]
+const actions = [
+   {
+    name: "Edit",
+    text: "",
+    title: "Edit record",
+    image: "Assests/DeleteIcon.png",
+    className: "btn-edit",
+    onClick: function (context) {
+      console.log("Edit clicked");
+      console.log("Selected row:", context.row);
+    },
+    hide: function (row) {
+      return row[0] === "Pending";
+    },
+    disable: function (row) {
+      return row[1] === "Amit Sharma";
+    },
+  },
+
+];
+
+ * The first row of data is treated as table headers.
+ * If options.columnMap is provided, only selected columns are displayed
+ * in the same sequence as defined in columnMap.
+ *
+ * Example:
+ * columnMap: {
+ *   Status: 0,
+ *   "Login Mobile No": 4,
+ *   "Father Name": 5,
+ *   Amount: 9,
+ *   Month: 7
+ * }
+ *
+ * If columnMap is not provided, all columns are displayed by default.
+ 
+ {
+    enableSearch: true,
+    enableSorting: true,
+    searchPlaceholder: "Search past records..."
+      isFileURLThere: true,
+    isFileNameThere: true,
+    enableRowCount : true,
+    columnMap: {
+    Status: 0,
+    "Login Mobile No": 4,
+    "Father Name": 5,
+    Amount: 9,
+    Month: 7
+  }
+  }
+
+ */
+
+function fillDynamicTableRows(
+  data,
+  headerId,
+  bodyId,
+  actions = [],
+  options = {},
+) {
   const tableHead = document.getElementById(headerId);
   const tableBody = document.getElementById(bodyId);
 
-  // Clear any existing content
+  if (!tableHead || !tableBody) return;
+
+  const table = tableHead.closest("table");
+
+  // Clear existing content
   tableHead.innerHTML = "";
   tableBody.innerHTML = "";
 
-  // Check if data is not empty
-  if (data.length === 0) return;
+  // Remove previous search box
+  const oldSearch = table.parentElement.querySelector(
+    ".collection-table-SearchContainer",
+  );
 
-  // Generate the table header
+  if (oldSearch) {
+    oldSearch.remove();
+  }
+
+  // Remove previous row count
+  const oldRowCount = table.parentElement.querySelector(
+    ".collection-table-RowCount",
+  );
+
+  if (oldRowCount) {
+    oldRowCount.remove();
+  }
+
+  // No data
+  if (!data || data.length === 0) {
+    return;
+  }
+
+  const headers = data[0];
+  const originalRows = data.slice(1);
+
+  /*
+   * Column Map
+   *
+   * If columnMap is provided:
+   *   - Object keys   = Display column names
+   *   - Object values = Original data column indexes
+   *
+   * Example:
+   * {
+   *   Date: 2,
+   *   Status: 0,
+   *   Comment: 1
+   * }
+   *
+   * If columnMap is not provided:
+   *   - Existing/default behavior will be used.
+   */
+  const hasColumnMap =
+    options.columnMap &&
+    typeof options.columnMap === "object" &&
+    !Array.isArray(options.columnMap) &&
+    Object.keys(options.columnMap).length > 0;
+
+  const displayHeaders = hasColumnMap
+    ? Object.keys(options.columnMap)
+    : headers;
+
+  const displayColumnIndexes = hasColumnMap
+    ? Object.values(options.columnMap)
+    : headers.map(function (_, index) {
+        return index;
+      });
+
+  let filteredRows = [...originalRows];
+
+  let sortColumn = -1;
+  let sortDirection = "asc";
+
+  // Search box
+  if (options.enableSearch) {
+    const searchContainer = document.createElement("div");
+
+    searchContainer.className = "collection-table-SearchContainer";
+
+    const searchInput = document.createElement("input");
+
+    searchInput.type = "text";
+    searchInput.className = "collection-table-SearchInput";
+
+    searchInput.placeholder = options.searchPlaceholder || "Search...";
+
+    const clearButton = document.createElement("button");
+
+    clearButton.type = "button";
+    clearButton.className = "collection-table-SearchClearBtn";
+
+    clearButton.innerHTML = "&times;";
+    clearButton.title = "Clear search";
+    clearButton.style.display = "none";
+
+    searchContainer.appendChild(searchInput);
+    searchContainer.appendChild(clearButton);
+
+    table.parentElement.insertBefore(searchContainer, table);
+
+    // Live search
+    searchInput.addEventListener("input", function () {
+      const searchValue = this.value.toLowerCase().trim();
+
+      clearButton.style.display = this.value.trim() ? "block" : "none";
+
+      filteredRows = originalRows.filter(function (row) {
+        return row.some(function (cell) {
+          return String(cell).toLowerCase().includes(searchValue);
+        });
+      });
+
+      renderRows();
+    });
+
+    // Clear search
+    clearButton.addEventListener("click", function () {
+      searchInput.value = "";
+      clearButton.style.display = "none";
+
+      filteredRows = [...originalRows];
+
+      renderRows();
+
+      searchInput.focus();
+    });
+  }
+
+  // Row count
+  let rowCountContainer = null;
+
+  if (options.enableRowCount) {
+    rowCountContainer = document.createElement("div");
+
+    rowCountContainer.className = "collection-table-RowCount";
+
+    table.parentElement.insertBefore(rowCountContainer, table);
+  }
+
+  // Update row count
+  function updateRowCount() {
+    if (!rowCountContainer) return;
+
+    const total = originalRows.length;
+    const current = filteredRows.length;
+
+    if (current === total) {
+      rowCountContainer.textContent = "Total Records: " + total;
+    } else {
+      rowCountContainer.textContent =
+        "Showing " + current + " of " + total + " records";
+    }
+  }
+
+  // Create header
   const headerRow = document.createElement("tr");
-  // Use the keys from the first object as headers
-  const headers = Object.keys(data[0]);
-  headers.forEach((headerCell) => {
+
+  if (actions.length > 0) {
+    const actionTh = document.createElement("th");
+
+    actionTh.textContent = "Action";
+    actionTh.className = "table-action-header";
+
+    headerRow.appendChild(actionTh);
+  }
+
+  displayHeaders.forEach(function (header, displayIndex) {
+    const columnIndex = displayColumnIndexes[displayIndex];
+
+    // Hide File URL column
+    if (options.isFileURLThere && String(header).toLowerCase() === "file url") {
+      return;
+    }
+
     const th = document.createElement("th");
-    th.textContent = headerCell;
+
+    th.textContent = header;
+
+    // Sorting
+    if (options.enableSorting) {
+      th.classList.add("sortable-table-header");
+
+      th.title = "Click to sort";
+
+      th.addEventListener("click", function () {
+        if (sortColumn === columnIndex) {
+          sortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+          sortColumn = columnIndex;
+          sortDirection = "asc";
+        }
+
+        filteredRows.sort(function (a, b) {
+          const valueA = String(a[columnIndex] ?? "").toLowerCase();
+
+          const valueB = String(b[columnIndex] ?? "").toLowerCase();
+
+          if (valueA < valueB) {
+            return sortDirection === "asc" ? -1 : 1;
+          }
+
+          if (valueA > valueB) {
+            return sortDirection === "asc" ? 1 : -1;
+          }
+
+          return 0;
+        });
+
+        updateSortIndicators();
+        renderRows();
+      });
+    }
+
     headerRow.appendChild(th);
   });
+
   tableHead.appendChild(headerRow);
 
-  // Generate the table rows
-  data.forEach((row) => {
-    const tr = document.createElement("tr");
-    headers.forEach((headerCell) => {
-      const td = document.createElement("td");
-      td.textContent = row[headerCell];
-      tr.appendChild(td);
+  // Update sort indicators
+  function updateSortIndicators() {
+    const headerCells = tableHead.querySelectorAll("th");
+
+    const offset = actions.length > 0 ? 1 : 0;
+
+    displayHeaders.forEach(function (_, displayIndex) {
+      const columnIndex = displayColumnIndexes[displayIndex];
+
+      const th = headerCells[displayIndex + offset];
+
+      if (!th) return;
+
+      th.classList.remove("sort-asc", "sort-desc");
+
+      if (columnIndex === sortColumn) {
+        th.classList.add(sortDirection === "asc" ? "sort-asc" : "sort-desc");
+      }
     });
-    tableBody.appendChild(tr);
-  });
+  }
+
+  // Evaluate action property
+  function evaluateActionProperty(property, row, defaultValue) {
+    if (property === undefined) {
+      return defaultValue;
+    }
+
+    if (typeof property === "function") {
+      return property(row);
+    }
+
+    return property;
+  }
+
+  // Render rows
+  function renderRows() {
+    tableBody.innerHTML = "";
+
+    updateRowCount();
+
+    // No matching data
+    if (filteredRows.length === 0) {
+      const tr = document.createElement("tr");
+
+      tr.className = "no-data-row";
+
+      const td = document.createElement("td");
+
+      td.colSpan = displayHeaders.length + (actions.length > 0 ? 1 : 0);
+
+      td.textContent = "No records found.";
+
+      tr.appendChild(td);
+      tableBody.appendChild(tr);
+
+      return;
+    }
+
+    filteredRows.forEach(function (row) {
+      const tr = document.createElement("tr");
+
+      // Action buttons
+      if (actions.length > 0) {
+        const actionTd = document.createElement("td");
+
+        actionTd.className = "table-action-cell";
+
+        actions.forEach(function (action) {
+          // Check whether button should be hidden
+          const shouldHide = evaluateActionProperty(action.hide, row, false);
+
+          if (shouldHide) {
+            return;
+          }
+
+          const button = document.createElement("button");
+
+          button.type = "button";
+
+          button.className = "table-action-btn " + (action.className || "");
+
+          // Check whether button should be disabled
+          const shouldDisable = evaluateActionProperty(
+            action.disable,
+            row,
+            false,
+          );
+
+          button.disabled = !!shouldDisable;
+
+          // Image
+          if (action.image) {
+            const img = document.createElement("img");
+
+            img.src = action.image;
+
+            img.alt = action.name || "Action";
+
+            img.title = action.title || "";
+
+            button.appendChild(img);
+          }
+
+          // Text
+          if (action.text) {
+            const span = document.createElement("span");
+
+            span.textContent = action.text;
+
+            button.appendChild(span);
+          }
+
+          // Tooltip
+          if (action.title) {
+            button.title = action.title;
+          }
+
+          // Inline style
+          if (action.style) {
+            Object.assign(button.style, action.style);
+          }
+
+          // Callback
+          button.addEventListener("click", function () {
+            if (typeof action.onClick === "function") {
+              action.onClick({
+                row: row,
+                headers: headers,
+                data: data,
+                action: action,
+              });
+            }
+          });
+
+          actionTd.appendChild(button);
+        });
+
+        tr.appendChild(actionTd);
+      }
+
+      // Data columns
+      displayHeaders.forEach(function (header, displayIndex) {
+        const columnIndex = displayColumnIndexes[displayIndex];
+
+        const td = document.createElement("td");
+
+        const value = row[columnIndex] ?? "";
+
+        // File URL column
+        if (
+          options.isFileURLThere &&
+          String(header).toLowerCase() === "file url"
+        ) {
+          td.style.display = "none";
+        }
+
+        // File Name column
+        else if (
+          options.isFileURLThere &&
+          options.isFileNameThere &&
+          String(header).toLowerCase() === "file name"
+        ) {
+          const fileUrlIndex = headers.findIndex(function (h) {
+            return String(h).toLowerCase() === "file url";
+          });
+
+          const fileUrl = fileUrlIndex >= 0 ? row[fileUrlIndex] : "";
+
+          if (fileUrl) {
+            const link = document.createElement("a");
+
+            link.href = fileUrl;
+            link.target = "_blank";
+
+            link.textContent = value || "File";
+
+            link.title = "Open file";
+
+            td.appendChild(link);
+          } else {
+            td.textContent = value;
+          }
+        }
+
+        // Normal column
+        else {
+          td.textContent = value;
+        }
+
+        tr.appendChild(td);
+      });
+
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // Initial render
+  renderRows();
 }
 
 function SHOW_SUCCESS_POPUP(message, onClose) {
@@ -1143,6 +1621,42 @@ async function CALL_API(apiType, data) {
   }
 }
 
+async function CALL_API_WITH_CACHE(
+  apiType,
+  inputData = {},
+  cacheHours = null,
+  forceRefresh = false,
+) {
+  if (!forceRefresh) {
+    const cachedResponse = await DB_GET(
+      apiType,
+      INDEX_DB.dbName,
+      INDEX_DB.storeName,
+    );
+
+    if (cachedResponse) {
+      console.log(`Cache Hit : ${apiType}`);
+      return cachedResponse;
+    }
+  }
+
+  console.log(`Cache Miss : ${apiType}`);
+
+  const response = await CALL_API(apiType, inputData);
+
+  if (response) {
+    await DB_SET(
+      apiType, // cache key = apiType
+      response,
+      INDEX_DB.dbName,
+      INDEX_DB.storeName,
+      cacheHours,
+    );
+  }
+
+  return response;
+}
+
 async function CALL_API_WITHOUT_LOADING(apiType, data) {
   const onlineRes = await IS_ONLINE();
   if (onlineRes) {
@@ -1164,10 +1678,12 @@ async function CALL_API_WITHOUT_LOADING(apiType, data) {
   }
 }
 
+const DB_VERSION = 2;
+
 // Open (or create) database and object store
 function DB_OPEN_INTERNAL(dbName = "AppDB", storeName = "store") {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, 1);
+    const request = indexedDB.open(dbName, DB_VERSION);
 
     request.onupgradeneeded = function (event) {
       const db = event.target.result;
@@ -1178,7 +1694,43 @@ function DB_OPEN_INTERNAL(dbName = "AppDB", storeName = "store") {
     };
 
     request.onsuccess = function (event) {
-      resolve(event.target.result);
+      const db = event.target.result;
+
+      // Safety check for old/corrupted databases
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.close();
+
+        const deleteRequest = indexedDB.deleteDatabase(dbName);
+
+        deleteRequest.onsuccess = function () {
+          // Reopen after reset
+          const reopenRequest = indexedDB.open(dbName, DB_VERSION);
+
+          reopenRequest.onupgradeneeded = function (event) {
+            const newDb = event.target.result;
+
+            if (!newDb.objectStoreNames.contains(storeName)) {
+              newDb.createObjectStore(storeName, { keyPath: "id" });
+            }
+          };
+
+          reopenRequest.onsuccess = function (event) {
+            resolve(event.target.result);
+          };
+
+          reopenRequest.onerror = function () {
+            reject("Failed to recreate IndexedDB");
+          };
+        };
+
+        deleteRequest.onerror = function () {
+          reject("Failed to reset IndexedDB");
+        };
+
+        return;
+      }
+
+      resolve(db);
     };
 
     request.onerror = function () {
@@ -1188,26 +1740,69 @@ function DB_OPEN_INTERNAL(dbName = "AppDB", storeName = "store") {
 }
 
 // Save or update data in given store
-async function DB_SET(storeKey, data, dbName = "AppDB", storeName = "store") {
+async function DB_SET(
+  storeKey,
+  data,
+  dbName = "AppDB",
+  storeName = "store",
+  expiryHours = null,
+) {
   const db = await DB_OPEN_INTERNAL(dbName, storeName);
-  const tx = db.transaction(storeName, "readwrite");
-  const store = tx.objectStore(storeName);
 
-  store.put({ id: storeKey, data: data });
-  return tx.complete;
+  if (!db.objectStoreNames.contains(storeName)) {
+    throw new Error(
+      `IndexedDB store '${storeName}' not found in database '${dbName}'`,
+    );
+  }
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+
+    store.put({
+      id: storeKey,
+      data,
+      expiresAt:
+        expiryHours !== null && expiryHours !== undefined
+          ? Date.now() + expiryHours * 60 * 60 * 1000
+          : null,
+    });
+
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
 }
 
-// Get data from store by key
 async function DB_GET(storeKey, dbName = "AppDB", storeName = "store") {
   const db = await DB_OPEN_INTERNAL(dbName, storeName);
+
+  if (!db.objectStoreNames.contains(storeName)) {
+    throw new Error(
+      `IndexedDB store '${storeName}' not found in database '${dbName}'`,
+    );
+  }
 
   return new Promise((resolve) => {
     const tx = db.transaction(storeName, "readonly");
     const store = tx.objectStore(storeName);
     const request = store.get(storeKey);
 
-    request.onsuccess = function () {
-      resolve(request.result ? request.result.data : null);
+    request.onsuccess = async function () {
+      const record = request.result;
+
+      if (!record) {
+        resolve(null);
+        return;
+      }
+
+      if (record.expiresAt && Date.now() > record.expiresAt) {
+        await DB_DELETE(storeKey, dbName, storeName);
+        resolve(null);
+        return;
+      }
+
+      resolve(record.data);
     };
 
     request.onerror = function () {
@@ -1219,10 +1814,32 @@ async function DB_GET(storeKey, dbName = "AppDB", storeName = "store") {
 // Delete data from store by key
 async function DB_DELETE(storeKey, dbName = "AppDB", storeName = "store") {
   const db = await DB_OPEN_INTERNAL(dbName, storeName);
-  const tx = db.transaction(storeName, "readwrite");
-  const store = tx.objectStore(storeName);
-  store.delete(storeKey);
-  return tx.complete;
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+
+    store.delete(storeKey);
+
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
+
+async function DB_CLEAR(dbName = "AppDB", storeName = "store") {
+  const db = await DB_OPEN_INTERNAL(dbName, storeName);
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+
+    store.clear();
+
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
 }
 
 function callFilterLiveSearchList(
@@ -1494,4 +2111,49 @@ function openVerifyDetailsWindow(
 function timeToMinutes(t) {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
+}
+
+/**
+ * Merges single-sheet or multiple-sheet data using column indexes.
+ *
+ * Same columns for all sheets:
+ * [0, 2, 3, 4, 5]
+ *
+ * Different columns per sheet:
+ * {
+ *   Pending: [0, 2, 3, 4, 5],
+ *   Approved: [0, 1, 3, 4, 5],
+ *   Rejected: [0, 2, 4, 5, 6]
+ * }
+ */
+function MERGE_SHEET_DATA(data, mergeConfig) {
+  const mergedData = [];
+
+  Object.entries(data).forEach(([sheetName, rows]) => {
+    const columnIndexes = Array.isArray(mergeConfig)
+      ? mergeConfig
+      : mergeConfig[sheetName];
+
+    // No merge configuration for this sheet
+    if (!columnIndexes || rows.length === 0) {
+      return;
+    }
+
+    rows.forEach((row, rowIndex) => {
+      const mergedRow = columnIndexes.map((index) => row[index] ?? "");
+
+      // Add header only once
+      if (rowIndex === 0) {
+        if (mergedData.length === 0) {
+          mergedData.push(mergedRow);
+        }
+
+        return;
+      }
+
+      mergedData.push(mergedRow);
+    });
+  });
+
+  return mergedData;
 }
