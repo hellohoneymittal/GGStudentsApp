@@ -265,7 +265,7 @@ function populateActionGrid(
   // Add table headers dynamically from columnNames array
   columnNames.forEach((column) => {
     const th = document.createElement("th");
-    th.textContent = column; // Use displayName for the header
+    th.textContent = column.split(" && ")[0]; // Use displayName for the header
     th.style.textAlign = "center";
     headerRow.appendChild(th);
   });
@@ -287,20 +287,22 @@ function populateActionGrid(
 
     // Add each data field into a new table cell (td)
     columnNames.forEach((column) => {
+      let actual_key = column.split(" && ")[0];
+      let hyperlink = column.split(" && ").length == 2 ? 1 : 0;
       const td = document.createElement("td");
-      if (gridData[key][column] == null) {
+      if (gridData[key][actual_key] == null) {
         td.innerText = "";
         row.appendChild(td);
         return;
       }
 
-      if (column === "Description") {
+      if (actual_key === "Description") {
         const container = document.createElement("div");
         container.className = "desc-container";
 
         const textDiv = document.createElement("div");
         textDiv.className = "desc-text";
-        textDiv.innerText = gridData[key][column];
+        textDiv.innerText = gridData[key][actual_key];
 
         const toggle = document.createElement("span");
         toggle.className = "toggle-btn read-more";
@@ -328,7 +330,11 @@ function populateActionGrid(
         container.appendChild(toggle);
         td.appendChild(container);
       } else {
-        td.innerText = gridData[key][column];
+        console.log(`Key: ${actual_key} - hyperlink: ${hyperlink}`);
+        td.innerHTML =
+          hyperlink == 0
+            ? gridData[key][actual_key]
+            : `<a href="tel:${gridData[key][actual_key]}">${gridData[key][actual_key]}</a>`;
       }
 
       //td.textContent = gridData[key][column];
