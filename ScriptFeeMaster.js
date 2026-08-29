@@ -284,14 +284,14 @@ async function populateFeeMasterGrid(isLoadingRequired = false) {
     columnMap: {
       Date: 2,
       Status: 0,
-      "Sewakarta Comment": 1,
+      "Admin Comment": 1,
       "Student Names": 6,
       Month: 7,
       Year: 8,
       Amount: 9,
       "File Url": 11,
       "File Name": 12,
-      Comment: 10,
+      "Comment by me": 10,
     },
   });
 }
