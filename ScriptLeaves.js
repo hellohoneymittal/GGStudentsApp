@@ -197,6 +197,7 @@ async function submitLeaves() {
   let student_name = document.getElementById(
     "studentLeavesHeading_lbl",
   ).innerHTML;
+  let whatsappClasses = ["Sri Hrishikesha", "Sri Padmanabha"];
   const outputData = await CALL_API(
     API_TYPE_CONSTANT.SUBMIT_STUDENT_LEAVES,
     leaveData,
@@ -212,11 +213,14 @@ async function submitLeaves() {
       SHOW_SUCCESS_POPUP(
         "Leaves submitted Successfully for " + student_name + "!",
         () => {
-          leaveData["whatsapp"] = 1;
-          CALL_API_WITHOUT_LOADING(
-            API_TYPE_CONSTANT.SUBMIT_STUDENT_LEAVES,
-            leaveData,
-          );
+          if (whatsappClasses.includes(selectedStudent.stdClass)) {
+            leaveData["whatsapp"] = selectedStudent.stdClass;
+            CALL_API_WITHOUT_LOADING(
+              API_TYPE_CONSTANT.SUBMIT_STUDENT_LEAVES,
+              leaveData,
+            );
+          }
+
           SHOW_SPECIFIC_DIV("userMenuPopup");
         },
       );
