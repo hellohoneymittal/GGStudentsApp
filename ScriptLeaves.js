@@ -197,7 +197,7 @@ async function submitLeaves() {
   let student_name = document.getElementById(
     "studentLeavesHeading_lbl",
   ).innerHTML;
-  let whatsappClasses = ["Sri Hrishikesha", "Sri Padmanabha"];
+  let whatsappClasses = [];
   const outputData = await CALL_API(
     API_TYPE_CONSTANT.SUBMIT_STUDENT_LEAVES,
     leaveData,
